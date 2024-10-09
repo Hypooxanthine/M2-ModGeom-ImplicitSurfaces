@@ -1,4 +1,4 @@
-#include "implicits.h"
+#include "Implicits/implicits.h"
 
 const float AnalyticScalarField::Epsilon = 1e-6f;
 
