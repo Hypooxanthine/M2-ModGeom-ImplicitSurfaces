@@ -40,4 +40,6 @@ private:
 	bool m_ControlsEnabled = true;
 	bool m_RealTimeComputing = true;
 	bool m_ShowControlPoints = true;
+
+	vrm::MeshAsset m_MeshAsset;
 };

@@ -14,6 +14,12 @@
 
 #include "imgui.h"
 
+#include "Implicits/Primitives/Sphere.h"
+#include "Implicits/Operators/TransformOperator.h"
+#include "Implicits/Operators/UnionOperator.h"
+#include "Implicits/Operators/IntersectionOperator.h"
+#include "Implicits/Operators/BlendOperator.h"
+
 MyScene::MyScene()
     : vrm::Scene(), m_Camera(0.1f, 100.f, glm::radians(90.f), 600.f / 400.f, { 0.5f, 10.f, 20.f }, { glm::radians(45.f), 0.f, 0.f })
 {
@@ -63,6 +69,18 @@ void MyScene::onInit()
     setCamera(&m_Camera);
 
     /* Visualization */
+
+    auto meshEntity = createEntity("Mesh");
+    auto& meshComponent = meshEntity.addComponent<vrm::MeshComponent>(m_MeshAsset.createInstance());
+    auto sphere = std::make_unique<Sphere>(glm::vec3{ 0.f, 0.f, 0.f }, 1.5f);
+    auto tSphere = std::make_unique<TransformOperator>(glm::translate(glm::mat4(1.f), glm::vec3{ 1.f, 1.f, 1.f }), sphere.get());
+    auto un = std::make_unique<UnionOperator>(sphere.get(), tSphere.get());
+    auto inter = std::make_unique<IntersectionOperator>(sphere.get(), tSphere.get());
+    auto blend = std::make_unique<BlendOperator>(.5f, sphere.get(), tSphere.get());
+    auto& imp = blend;
+    vrm::MeshData m;
+    imp->Polygonize(200, m, Box({ -10.f, -10.f, -10.f }, { 10.f, 10.f, 10.f }));
+    m_MeshAsset.addSubmesh(std::move(m));
 
     auto lightEntity = createEntity("Light");
     auto& c =  lightEntity.addComponent<vrm::PointLightComponent>();

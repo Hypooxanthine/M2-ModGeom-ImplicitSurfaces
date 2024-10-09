@@ -19,6 +19,7 @@ class AnalyticScalarField
 protected:
 public:
   AnalyticScalarField();
+  virtual ~AnalyticScalarField() = default;
   virtual float Value(const glm::vec3&) const;
   virtual glm::vec3 Gradient(const glm::vec3&) const;
 
