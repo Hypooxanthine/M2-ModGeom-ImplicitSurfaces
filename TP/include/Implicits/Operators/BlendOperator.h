@@ -9,6 +9,10 @@ public:
 
     float Value(const glm::vec3& p) const override;
 
+    inline float& getRadiusRef() { return m_Radius; }
+
+    std::unique_ptr<NodeEditor> instanciateEditor(SceneNode* node);
+
 private:
     float m_Radius;
 };

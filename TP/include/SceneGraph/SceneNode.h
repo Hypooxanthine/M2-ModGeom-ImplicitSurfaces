@@ -87,6 +87,8 @@ public:
 
     inline const AnalyticScalarField& getImplicit() const { return *m_Implicit; }
 
+    inline AnalyticScalarField& getImplicit() { return *m_Implicit; }
+
     inline const SceneNode& getChild(size_t i) const { return m_Children.at(i); }
 
     inline SceneNode& getChild(size_t i) { return m_Children.at(i); }

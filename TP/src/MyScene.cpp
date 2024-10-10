@@ -79,12 +79,12 @@ void MyScene::onInit()
 
     auto meshEntity = createEntity("Mesh");
     auto& meshComponent = meshEntity.addComponent<vrm::MeshComponent>(m_MeshAsset.createInstance());
-    auto sphere = std::make_unique<Sphere>(glm::vec3{ 0.f, 0.f, 0.f }, 1.5f);
-    auto tSphere = std::make_unique<TransformOperator>(glm::translate(glm::mat4(1.f), glm::vec3{ 1.f, 1.f, 1.f }), sphere.get());
-    auto un = std::make_unique<UnionOperator>(sphere.get(), tSphere.get());
-    auto inter = std::make_unique<IntersectionOperator>(sphere.get(), tSphere.get());
-    auto blend = std::make_unique<BlendOperator>(1.f, sphere.get(), tSphere.get());
-    auto diff = std::make_unique<DifferenceOperator>(sphere.get(), tSphere.get());
+    //auto sphere = std::make_unique<Sphere>(glm::vec3{ 0.f, 0.f, 0.f }, 1.5f);
+    //auto tSphere = std::make_unique<TransformOperator>(glm::translate(glm::mat4(1.f), glm::vec3{ 1.f, 1.f, 1.f }), sphere.get());
+    //auto un = std::make_unique<UnionOperator>(sphere.get(), tSphere.get());
+    //auto inter = std::make_unique<IntersectionOperator>(sphere.get(), tSphere.get());
+    //auto blend = std::make_unique<BlendOperator>(1.f, sphere.get(), tSphere.get());
+    //auto diff = std::make_unique<DifferenceOperator>(sphere.get(), tSphere.get());
     const auto& imp = m_SceneGraph.getRoot().getImplicit();
     vrm::MeshData m;
     imp.Polygonize(500, m, Box({ -10.f, -10.f, -10.f }, { 10.f, 10.f, 10.f }));

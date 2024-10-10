@@ -8,11 +8,15 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 
 #include <Vroom/Asset/AssetData/MeshData.h>
 #include <glm/glm.hpp>
 
 #include "box.h"
+
+class SceneNode;
+class NodeEditor;
 
 class AnalyticScalarField
 {
@@ -34,6 +38,8 @@ public:
 
   // Only for ASF that hold children.
   virtual void setField(size_t field, const AnalyticScalarField* asf) { throw std::runtime_error("Unauthorized operation"); }
+
+  virtual std::unique_ptr<NodeEditor> instanciateEditor(SceneNode* node) = 0;
 protected:
   static const float Epsilon; //!< Epsilon value for partial derivatives
 protected:

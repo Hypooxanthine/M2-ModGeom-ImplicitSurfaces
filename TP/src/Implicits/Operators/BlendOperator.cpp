@@ -1,5 +1,7 @@
 #include "Implicits/Operators/BlendOperator.h"
 
+#include "SceneGraph/NodeEditor/BlendOperatorEditor.h"
+
 BlendOperator::BlendOperator(float radius, const AnalyticScalarField* field1, const AnalyticScalarField* field2)
     : BinaryOperator(field1, field2), m_Radius(radius)
 {}
@@ -13,4 +15,9 @@ float BlendOperator::Value(const glm::vec3& p) const
     const float g = (1.f / 6.f) * m_Radius * h * h * h;
 
     return std::min(v0, v1) - g;
+}
+
+std::unique_ptr<NodeEditor> BlendOperator::instanciateEditor(SceneNode* node)
+{
+    return std::unique_ptr<NodeEditor>(new BlendOperatorEditor(node, this));
 }

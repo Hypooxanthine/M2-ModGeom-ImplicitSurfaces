@@ -18,7 +18,17 @@ SceneGraph::SceneGraph()
 
 void SceneGraph::notifySelection(SceneNode* node)
 {
-    m_NodeEditor->setToggleNode(node);
+    if (m_NodeEditor->getNode() == node) // Clicking again on a node will unselect it
+    {
+        node->setSelected(false);
+        m_NodeEditor->disable();
+    }
+    // When nothing is selected, clicking on a node will select it
+    // Or when another node was selected, we change the selected one
+    else
+    {
+        m_NodeEditor = std::move(node->getImplicit().instanciateEditor(node));
+    }
 }
 
 void SceneGraph::onImgui()
