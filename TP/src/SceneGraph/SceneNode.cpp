@@ -1,25 +1,37 @@
 #include "SceneGraph/SceneNode.h"
 
+#include <Vroom/Core/Log.h>
+
 #include "imgui.h"
+
+#include "SceneGraph/SceneGraph.h"
+
+float SceneNode::value(const glm::vec3& p) const
+{
+    return m_Implicit->Value(p);
+}
 
 void SceneNode::onImgui()
 {
     ImGui::PushID(this);
 
     int flags = isNode() ?
-        ImGuiTreeNodeFlags_DefaultOpen
-        : ImGuiTreeNodeFlags_Leaf;
+        (ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow)
+        : (ImGuiTreeNodeFlags_Leaf);
+    
+    if (m_Selected)
+        flags |= ImGuiTreeNodeFlags_Selected;
     
     if (ImGui::TreeNodeEx(getNodeName().c_str(), flags))
     {
-        ImGui::SameLine();
-        if (ImGui::Checkbox("##checkbox", &m_Selected))
+        if (ImGui::IsItemClicked())
         {
-
+            m_SceneGraph->notifySelection(this);
         }
 
         for (auto& childNode : m_Children)
             childNode.onImgui();
+
         ImGui::TreePop();
     }
 

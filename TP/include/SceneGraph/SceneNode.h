@@ -7,6 +7,7 @@
 #include "Implicits/implicits.h"
 #include "Implicits/Primitives/VoidImplicit.h"
 
+class SceneGraph;
 
 // arra_to_tuple function from cppreference : https://en.cppreference.com/w/cpp/utility/integer_sequence
 template <typename Array, std::size_t... I>
@@ -41,10 +42,11 @@ public:
      * Only for leaves, analytic scalar field must be a primitive
      */
     template <typename T, typename... Args>
-    static SceneNode CreateLeaf(const std::string& nodeName, Args&&... args)
+    static SceneNode CreateLeaf(SceneGraph* graph, const std::string& nodeName, Args&&... args)
     {
         static_assert(T::GetRequiredChildrenCount() == 0);
         SceneNode n;
+        n.m_SceneGraph = graph;
         n.m_NodeName = nodeName;
         n.m_Implicit = std::unique_ptr<T>(new T(std::forward<Args>(args)...));
         n.m_IsLeaf = true;
@@ -53,17 +55,18 @@ public:
     }
 
     template <typename T, typename... Args>
-    static SceneNode CreateNode(const std::string& nodeName, Args&&... args)
+    static SceneNode CreateNode(SceneGraph* graph, const std::string& nodeName, Args&&... args)
     {
         static_assert(T::GetRequiredChildrenCount() > 0);
         SceneNode n;
+        n.m_SceneGraph = graph;
         n.m_NodeName = nodeName;
         n.m_Children.reserve(T::GetRequiredChildrenCount());
         std::array<const AnalyticScalarField*, T::GetRequiredChildrenCount()> arrayFields; 
 
         for (size_t i = 0; i < T::GetRequiredChildrenCount(); i++)
         {
-            n.m_Children.emplace_back(CreateLeaf<VoidImplicit>("Empty"));
+            n.m_Children.emplace_back(CreateLeaf<VoidImplicit>(graph, "Empty"));
             arrayFields[i] = &n.m_Children.back().getImplicit();
         }
 
@@ -98,6 +101,12 @@ public:
     
     void setChildNode(size_t field, SceneNode&& node);
 
+    inline void setSelected(bool selected) { m_Selected = selected; }
+
+    // Processing
+    
+    float value(const glm::vec3& p) const;
+
     // Iteration
 
     inline iterator begin();
@@ -112,11 +121,12 @@ private:
     SceneNode() = default;
 
 private:
+    SceneGraph* m_SceneGraph = nullptr;
     std::string m_NodeName;
     std::unique_ptr<AnalyticScalarField> m_Implicit;
     Container m_Children;
     bool m_IsLeaf = true;
-    bool m_Selected = true;
+    bool m_Selected = false;
 };
 
 
@@ -170,6 +180,8 @@ public:
 
         m_ChildIndexStack.emplace(index);
         m_NodeStack.emplace(&m_NodeStack.top()->getChild(index));
+
+        return *this;
     }
 
     SceneNodeIterator operator++(int)
