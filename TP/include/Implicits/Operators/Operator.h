@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <Vroom/Core/Assert.h>
 
 #include "Implicits/implicits.h"
 
@@ -19,6 +20,12 @@ public:
 
     inline static consteval int GetRequiredChildrenCount() { return N; }
 
+    inline void setField(size_t field, const AnalyticScalarField* asf) override
+    {
+        VRM_ASSERT_MSG(field < N, "Requested to edit field {} but the operator only holds {}.", field, N);
+        m_Fields.at(field) = asf;
+    }
+
 protected:
     template <int F>
     inline float fieldValue(const glm::vec3& p) const
@@ -27,7 +34,7 @@ protected:
     }
 
 private:
-    std::array<AnalyticScalarField*, N> m_Fields;
+    std::array<const AnalyticScalarField*, N> m_Fields;
 };
 
 using UnaryOperator = Operator<1>;

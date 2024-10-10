@@ -1,6 +1,6 @@
 #include "Implicits/Operators/IntersectionOperator.h"
 
-IntersectionOperator::IntersectionOperator(AnalyticScalarField* field1, AnalyticScalarField* field2)
+IntersectionOperator::IntersectionOperator(const AnalyticScalarField* field1, const AnalyticScalarField* field2)
     : BinaryOperator(field1, field2)
 {}
 

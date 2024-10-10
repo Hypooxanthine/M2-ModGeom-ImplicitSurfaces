@@ -1,6 +1,6 @@
 #include "Implicits/Operators/BlendOperator.h"
 
-BlendOperator::BlendOperator(float radius, AnalyticScalarField* field1, AnalyticScalarField* field2)
+BlendOperator::BlendOperator(float radius, const AnalyticScalarField* field1, const AnalyticScalarField* field2)
     : BinaryOperator(field1, field2), m_Radius(radius)
 {}
 

@@ -1,6 +1,6 @@
 #include "Implicits/Operators/DifferenceOperator.h"
 
-DifferenceOperator::DifferenceOperator(AnalyticScalarField* field1, AnalyticScalarField* field2)
+DifferenceOperator::DifferenceOperator(const AnalyticScalarField* field1, const AnalyticScalarField* field2)
     : BinaryOperator(field1, field2)
 {}
 

@@ -5,6 +5,21 @@
 #include <memory>
 
 #include "Implicits/implicits.h"
+#include "Implicits/Primitives/VoidImplicit.h"
+
+
+// arra_to_tuple function from cppreference : https://en.cppreference.com/w/cpp/utility/integer_sequence
+template <typename Array, std::size_t... I>
+inline constexpr auto array_to_tuple_impl(const Array& a, std::index_sequence<I...>)
+{
+    return std::make_tuple(a[I]...);
+}
+
+template <typename T, std::size_t N, typename Indx = std::make_index_sequence<N>>
+inline constexpr auto array_to_tuple(const std::array<T, N>& a)
+{
+    return array_to_tuple_impl(a, Indx{});
+}
 
 class SceneNodeIterator;
 
@@ -14,17 +29,6 @@ public:
     using Container = std::vector<SceneNode>;
     using iterator = SceneNodeIterator;
 public:
-
-    /**
-     * Only for leaves, analytic scalar field must be a primitive
-     */
-    template <typename T, typename... Args>
-    SceneNode(const std::string& nodeName, Args&&... args)
-        : m_NodeName(nodeName)
-    {
-        static_assert(T::GetRequiredChildrenCount() == 0);
-        setImplicit<T>(std::forward<Args>(args)...);
-    }
 
     SceneNode(SceneNode&& other) = default;
 
@@ -42,7 +46,32 @@ public:
         static_assert(T::GetRequiredChildrenCount() == 0);
         SceneNode n;
         n.m_NodeName = nodeName;
-        n.setImplicit<T>(std::forward<Args>(args)...);
+        n.m_Implicit = std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+        n.m_IsLeaf = true;
+
+        return n;
+    }
+
+    template <typename T, typename... Args>
+    static SceneNode CreateNode(const std::string& nodeName, Args&&... args)
+    {
+        static_assert(T::GetRequiredChildrenCount() > 0);
+        SceneNode n;
+        n.m_NodeName = nodeName;
+        n.m_Children.reserve(T::GetRequiredChildrenCount());
+        std::array<const AnalyticScalarField*, T::GetRequiredChildrenCount()> arrayFields; 
+
+        for (size_t i = 0; i < T::GetRequiredChildrenCount(); i++)
+        {
+            n.m_Children.emplace_back(CreateLeaf<VoidImplicit>("Empty"));
+            arrayFields[i] = &n.m_Children.back().getImplicit();
+        }
+
+        auto tupleFields = array_to_tuple<const AnalyticScalarField*, T::GetRequiredChildrenCount()>(arrayFields);
+        auto tupleArgs = std::tuple_cat(std::make_tuple(std::forward<Args>(args)...), tupleFields);
+        
+        n.m_Implicit = std::unique_ptr<T>(new T(std::make_from_tuple<T>(tupleArgs)));
+        n.m_IsLeaf = false;
 
         return n;
     }
@@ -59,23 +88,25 @@ public:
 
     inline size_t getChildrenCount() const { return m_Children.size(); }
 
+    inline bool isLeaf() const { return m_IsLeaf; }
+
+    inline bool isNode() const { return !m_IsLeaf; }
+
     // Setters
 
     inline void setNodeName(const std::string& nodeName) { m_NodeName = nodeName; }
-
-    template <typename T, typename... Args>
-    inline void setImplicit(Args&&... args)
-    {
-        static_assert(T::GetRequiredChildrenCount() == 0);
-        m_Implicit = std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-        m_Children.clear();
-    }
+    
+    void setChildNode(size_t field, SceneNode&& node);
 
     // Iteration
 
     inline iterator begin();
 
     inline iterator end();
+
+    // GUI
+
+    void onImgui();
 
 private:
     SceneNode() = default;
@@ -84,6 +115,8 @@ private:
     std::string m_NodeName;
     std::unique_ptr<AnalyticScalarField> m_Implicit;
     Container m_Children;
+    bool m_IsLeaf = true;
+    bool m_Selected = true;
 };
 
 

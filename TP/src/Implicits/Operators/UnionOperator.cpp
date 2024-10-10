@@ -1,6 +1,6 @@
 #include "Implicits/Operators/UnionOperator.h"
 
-UnionOperator::UnionOperator(AnalyticScalarField* field1, AnalyticScalarField* field2)
+UnionOperator::UnionOperator(const AnalyticScalarField* field1, const AnalyticScalarField* field2)
     : BinaryOperator(field1, field2)
 {}
 

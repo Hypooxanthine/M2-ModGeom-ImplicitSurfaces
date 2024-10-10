@@ -71,6 +71,10 @@ void MyScene::onInit()
 
     setCamera(&m_Camera);
 
+    /* Processing */
+
+    
+
     /* Visualization */
 
     auto meshEntity = createEntity("Mesh");
@@ -81,8 +85,7 @@ void MyScene::onInit()
     auto inter = std::make_unique<IntersectionOperator>(sphere.get(), tSphere.get());
     auto blend = std::make_unique<BlendOperator>(1.f, sphere.get(), tSphere.get());
     auto diff = std::make_unique<DifferenceOperator>(sphere.get(), tSphere.get());
-    SceneGraph graph;
-    const auto& imp = graph.getRoot().getImplicit();
+    const auto& imp = m_SceneGraph.getRoot().getImplicit();
     vrm::MeshData m;
     imp.Polygonize(500, m, Box({ -10.f, -10.f, -10.f }, { 10.f, 10.f, 10.f }));
     m_MeshAsset.addSubmesh(std::move(m));
@@ -141,6 +144,8 @@ void MyScene::onImGui()
 
     ImGui::Begin("Tweaks");
     ImGui::End();
+
+    m_SceneGraph.onImgui();
 
     ImGui::Begin("Stats");
         ImGui::TextWrapped("FPS: %.2f", ImGui::GetIO().Framerate);

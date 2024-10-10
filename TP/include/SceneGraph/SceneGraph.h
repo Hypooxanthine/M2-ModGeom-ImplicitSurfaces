@@ -12,6 +12,8 @@ public:
 
     inline const SceneNode& getRoot() const { return m_Root; }
 
+    void onImgui();
+
     inline iterator begin() { return m_Root.begin(); }
     inline iterator end() { return m_Root.end(); }
 

@@ -10,6 +10,8 @@
 
 #include "imgui.h"
 
+#include "SceneGraph/SceneGraph.h"
+
 class MyScene : public vrm::Scene
 {
 public:
@@ -40,6 +42,8 @@ private:
 	bool m_ControlsEnabled = true;
 	bool m_RealTimeComputing = true;
 	bool m_ShowControlPoints = true;
+
+	SceneGraph m_SceneGraph;
 
 	vrm::MeshAsset m_MeshAsset;
 };
