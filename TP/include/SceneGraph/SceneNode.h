@@ -83,6 +83,8 @@ public:
 
     inline const std::string& getNodeName() const { return m_NodeName; }
 
+    inline std::string& getNodeName() { return m_NodeName; }
+
     inline const AnalyticScalarField& getImplicit() const { return *m_Implicit; }
 
     inline const SceneNode& getChild(size_t i) const { return m_Children.at(i); }
@@ -118,7 +120,10 @@ public:
     void onImgui();
 
 private:
-    SceneNode() = default;
+    SceneNode()
+    {
+        m_NodeName.reserve(50);
+    }
 
 private:
     SceneGraph* m_SceneGraph = nullptr;

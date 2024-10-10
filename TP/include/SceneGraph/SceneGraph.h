@@ -1,6 +1,9 @@
 #pragma once
 
+#include <memory>
+
 #include "SceneGraph/SceneNode.h"
+#include "SceneGraph/NodeEditor/NodeEditor.h"
 
 class SceneGraph
 {
@@ -29,5 +32,5 @@ public:
 
 private:
     SceneNode m_Root;
-    SceneNode* m_SelectedNode = nullptr;
+    std::unique_ptr<NodeEditor> m_NodeEditor = nullptr;
 };
