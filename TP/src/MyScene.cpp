@@ -85,10 +85,6 @@ void MyScene::onInit()
     //auto inter = std::make_unique<IntersectionOperator>(sphere.get(), tSphere.get());
     //auto blend = std::make_unique<BlendOperator>(1.f, sphere.get(), tSphere.get());
     //auto diff = std::make_unique<DifferenceOperator>(sphere.get(), tSphere.get());
-    const auto& imp = m_SceneGraph.getRoot().getImplicit();
-    vrm::MeshData m;
-    imp.Polygonize(500, m, Box({ -10.f, -10.f, -10.f }, { 10.f, 10.f, 10.f }));
-    m_MeshAsset.addSubmesh(std::move(m));
 
     auto lightEntity = createEntity("Light");
     auto& c =  lightEntity.addComponent<vrm::PointLightComponent>();
@@ -104,6 +100,14 @@ void MyScene::onEnd()
 
 void MyScene::onUpdate(float dt)
 {
+    /* Processing */
+
+    const auto& imp = m_SceneGraph.getRoot().getImplicit();
+    vrm::MeshData m;
+    imp.Polygonize(70, m, Box({ -10.f, -10.f, -10.f }, { 10.f, 10.f, 10.f }));
+    m_MeshAsset.clear();
+    m_MeshAsset.addSubmesh(std::move(m));
+
     /* Camera */
     if (m_ControlsEnabled && m_MouseLock)
     {
