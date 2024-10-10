@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "Implicits/implicits.h"
 
@@ -10,18 +11,51 @@ class SceneNodeIterator;
 class SceneNode
 {
 public:
-    using Container = std::vector<SceneNode*>;
+    using Container = std::vector<SceneNode>;
+    using iterator = SceneNodeIterator;
 public:
-    SceneNode() = default;
+
+    /**
+     * Only for leaves, analytic scalar field must be a primitive
+     */
+    template <typename T, typename... Args>
+    SceneNode(const std::string& nodeName, Args&&... args)
+        : m_NodeName(nodeName)
+    {
+        static_assert(T::GetRequiredChildrenCount() == 0);
+        setImplicit<T>(std::forward<Args>(args)...);
+    }
+
+    SceneNode(SceneNode&& other) = default;
+
+    SceneNode& operator=(SceneNode&& other) = default;
+
     ~SceneNode() = default;
+
+    // Static
+    /**
+     * Only for leaves, analytic scalar field must be a primitive
+     */
+    template <typename T, typename... Args>
+    static SceneNode CreateLeaf(const std::string& nodeName, Args&&... args)
+    {
+        static_assert(T::GetRequiredChildrenCount() == 0);
+        SceneNode n;
+        n.m_NodeName = nodeName;
+        n.setImplicit<T>(std::forward<Args>(args)...);
+
+        return n;
+    }
 
     // Getters
 
     inline const std::string& getNodeName() const { return m_NodeName; }
 
-    inline AnalyticScalarField* getImplicit() const { return m_Implicit; }
+    inline const AnalyticScalarField& getImplicit() const { return *m_Implicit; }
 
-    inline const Container& getChildren() const { return m_Children; }
+    inline const SceneNode& getChild(size_t i) const { return m_Children.at(i); }
+
+    inline SceneNode& getChild(size_t i) { return m_Children.at(i); }
 
     inline size_t getChildrenCount() const { return m_Children.size(); }
 
@@ -29,19 +63,26 @@ public:
 
     inline void setNodeName(const std::string& nodeName) { m_NodeName = nodeName; }
 
-    inline void setImplicit(AnalyticScalarField* implicit) { m_Implicit = implicit; }
-
-    inline void addChild(SceneNode* child) { m_Children.push_back(child); }
+    template <typename T, typename... Args>
+    inline void setImplicit(Args&&... args)
+    {
+        static_assert(T::GetRequiredChildrenCount() == 0);
+        m_Implicit = std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+        m_Children.clear();
+    }
 
     // Iteration
 
-    inline SceneNodeIterator begin();
+    inline iterator begin();
 
-    inline SceneNodeIterator end();
+    inline iterator end();
+
+private:
+    SceneNode() = default;
 
 private:
     std::string m_NodeName;
-    AnalyticScalarField* m_Implicit;
+    std::unique_ptr<AnalyticScalarField> m_Implicit;
     Container m_Children;
 };
 
@@ -95,7 +136,7 @@ public:
         ++m_ChildIndexStack.top();
 
         m_ChildIndexStack.emplace(index);
-        m_NodeStack.emplace(m_NodeStack.top()->getChildren().at(index));
+        m_NodeStack.emplace(&m_NodeStack.top()->getChild(index));
     }
 
     SceneNodeIterator operator++(int)

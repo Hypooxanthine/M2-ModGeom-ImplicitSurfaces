@@ -9,6 +9,8 @@ public:
 
     virtual float Value(const glm::vec3&) const override;
 
+    inline static consteval int GetRequiredChildrenCount() { return 0; }
+
 private:
     glm::vec3 m_Center;
     float m_Radius;

@@ -21,6 +21,8 @@
 #include "Implicits/Operators/BlendOperator.h"
 #include "Implicits/Operators/DifferenceOperator.h"
 
+#include "SceneGraph/SceneGraph.h"
+
 MyScene::MyScene()
     : vrm::Scene(), m_Camera(0.1f, 100.f, glm::radians(90.f), 600.f / 400.f, { 0.5f, 10.f, 20.f }, { glm::radians(45.f), 0.f, 0.f })
 {
@@ -77,11 +79,12 @@ void MyScene::onInit()
     auto tSphere = std::make_unique<TransformOperator>(glm::translate(glm::mat4(1.f), glm::vec3{ 1.f, 1.f, 1.f }), sphere.get());
     auto un = std::make_unique<UnionOperator>(sphere.get(), tSphere.get());
     auto inter = std::make_unique<IntersectionOperator>(sphere.get(), tSphere.get());
-    auto blend = std::make_unique<BlendOperator>(.5f, sphere.get(), tSphere.get());
+    auto blend = std::make_unique<BlendOperator>(1.f, sphere.get(), tSphere.get());
     auto diff = std::make_unique<DifferenceOperator>(sphere.get(), tSphere.get());
-    auto& imp = diff;
+    SceneGraph graph;
+    const auto& imp = graph.getRoot().getImplicit();
     vrm::MeshData m;
-    imp->Polygonize(500, m, Box({ -10.f, -10.f, -10.f }, { 10.f, 10.f, 10.f }));
+    imp.Polygonize(500, m, Box({ -10.f, -10.f, -10.f }, { 10.f, 10.f, 10.f }));
     m_MeshAsset.addSubmesh(std::move(m));
 
     auto lightEntity = createEntity("Light");

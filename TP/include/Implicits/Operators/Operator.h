@@ -17,6 +17,8 @@ public:
 
     virtual float Value(const glm::vec3& p) const override = 0;
 
+    inline static consteval int GetRequiredChildrenCount() { return N; }
+
 protected:
     template <int F>
     inline float fieldValue(const glm::vec3& p) const
