@@ -27,7 +27,10 @@ void SceneGraph::notifySelection(SceneNode* node)
     // Or when another node was selected, we change the selected one
     else
     {
+        if (m_NodeEditor->getNode() != nullptr)
+            m_NodeEditor->getNode()->setSelected(false);
         m_NodeEditor = std::move(node->getImplicit().instanciateEditor(node));
+        node->setSelected(true);
     }
 }
 

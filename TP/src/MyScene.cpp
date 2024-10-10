@@ -102,11 +102,8 @@ void MyScene::onUpdate(float dt)
 {
     /* Processing */
 
-    const auto& imp = m_SceneGraph.getRoot().getImplicit();
-    vrm::MeshData m;
-    imp.Polygonize(70, m, Box({ -10.f, -10.f, -10.f }, { 10.f, 10.f, 10.f }));
-    m_MeshAsset.clear();
-    m_MeshAsset.addSubmesh(std::move(m));
+    if (m_RealTimeProcessing)
+        updateMesh();
 
     /* Camera */
     if (m_ControlsEnabled && m_MouseLock)
@@ -131,6 +128,22 @@ void MyScene::onRender()
     ImGui::PopFont();
 }
 
+void MyScene::updateMesh()
+{
+    auto start = std::chrono::high_resolution_clock::now();
+
+    const auto& imp = m_SceneGraph.getRoot().getImplicit();
+    vrm::MeshData m;
+    imp.Polygonize(m_DiscretizationParameter, m, Box(m_BoxStart, m_BoxEnd));
+    m_MeshAsset.clear();
+    m_MeshAsset.addSubmesh(std::move(m));
+
+    auto end = std::chrono::high_resolution_clock::now();
+
+    // Time in seconds
+    m_LastProcessTimeSeconds = std::chrono::duration<float>(end - start).count();
+}
+
 void MyScene::onImGui()
 {
     ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
@@ -147,11 +160,21 @@ void MyScene::onImGui()
     ImGui::End();
 
     ImGui::Begin("Tweaks");
+        ImGui::Checkbox("Real-time processing", &m_RealTimeProcessing);
+        ImGui::TextWrapped("Discretization parameter");
+        ImGui::SliderInt("##Discretization parameter", &m_DiscretizationParameter, 2, 200);
+        ImGui::TextWrapped("Box start");
+        ImGui::SliderFloat3("##Box start", &m_BoxStart.x, -20.f, 20.f);
+        ImGui::TextWrapped("Box end");
+        ImGui::SliderFloat3("##Box end", &m_BoxEnd.x, -20.f, 20.f);
+        if (ImGui::Button("Manual update"))
+            updateMesh();
     ImGui::End();
 
     m_SceneGraph.onImgui();
 
     ImGui::Begin("Stats");
         ImGui::TextWrapped("FPS: %.2f", ImGui::GetIO().Framerate);
+        ImGui::TextWrapped("Last processing time: %.6f s", m_LastProcessTimeSeconds);
     ImGui::End();
 }

@@ -28,6 +28,8 @@ protected:
 	void onRender() override;
 
 private:
+	void updateMesh();
+
 	void onImGui();
 
 private:
@@ -40,8 +42,11 @@ private:
 	ImFont* m_Font = nullptr;
 
 	bool m_ControlsEnabled = true;
-	bool m_RealTimeComputing = true;
-	bool m_ShowControlPoints = true;
+
+	bool m_RealTimeProcessing = true;
+	int m_DiscretizationParameter = 70;
+	glm::vec3 m_BoxStart = glm::vec3(-10.f), m_BoxEnd = glm::vec3(10.f);
+	float m_LastProcessTimeSeconds = 0.f;
 
 	SceneGraph m_SceneGraph;
 
