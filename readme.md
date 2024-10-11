@@ -1,4 +1,9 @@
-# TP de Modélisation Géométrique
+# Implicit surfaces
+
+## Description
+
+University assignment.
+This project is an implementation of implicit surfaces with (provided) cube marching algorithm. Editable scene hierarchy in ImGui interface.
 
 ## Building project
 
