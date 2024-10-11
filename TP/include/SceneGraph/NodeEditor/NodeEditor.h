@@ -17,7 +17,7 @@ public:
     void onImgui();
 
 protected:
-    virtual void onImgui_Impl() = 0;
+    virtual void onImgui_Impl() {}
 
 private:
     SceneNode* m_Node = nullptr;

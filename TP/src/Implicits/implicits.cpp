@@ -1,5 +1,7 @@
 #include "Implicits/implicits.h"
 
+#include "SceneGraph/NodeEditor/NodeEditor.h"
+
 const float AnalyticScalarField::Epsilon = 1e-6f;
 
 /*!
@@ -7,6 +9,11 @@ const float AnalyticScalarField::Epsilon = 1e-6f;
 */
 AnalyticScalarField::AnalyticScalarField()
 {
+}
+
+std::unique_ptr<NodeEditor> AnalyticScalarField::instanciateEditor(SceneNode* node)
+{
+    return std::unique_ptr<NodeEditor>(new NodeEditor(node));
 }
 
 /*!

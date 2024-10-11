@@ -39,7 +39,7 @@ public:
   // Only for ASF that hold children.
   virtual void setField(size_t field, const AnalyticScalarField* asf) { throw std::runtime_error("Unauthorized operation"); }
 
-  virtual std::unique_ptr<NodeEditor> instanciateEditor(SceneNode* node) = 0;
+  virtual std::unique_ptr<NodeEditor> instanciateEditor(SceneNode* node);
 protected:
   static const float Epsilon; //!< Epsilon value for partial derivatives
 protected:
