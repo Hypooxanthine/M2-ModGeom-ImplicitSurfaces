@@ -22,9 +22,18 @@ void NodeEditor::onImgui()
         {
             for (int i = 0; i < static_cast<int>(NodeType::Type::COUNT); i++)
             {
+                if (i == static_cast<int>(m_Node->getNodeType()))
+                    continue;
+
                 if (ImGui::Selectable(NodeType::GetUINameOfNodeType(static_cast<NodeType::Type>(i)).data()))
-                    VRM_LOG_WARN("Cannot switch node to type {} : not implemented yet.", 
-                        NodeType::GetUINameOfNodeType(static_cast<NodeType::Type>(i)));
+                {
+                    auto node = NodeType::CreateNodeOfType(static_cast<NodeType::Type>(i), m_Node->getSceneGraph());
+                    size_t field = m_Node->getParent()->getFieldContaining(m_Node);
+
+                    m_Node = &(m_Node->getParent()->setChildNode(field, std::move(node)));
+
+                    m_AskedRefresh = true;
+                }
             };
 
             ImGui::EndCombo();

@@ -1,6 +1,7 @@
 #include "SceneGraph/SceneNode.h"
 
 #include <Vroom/Core/Log.h>
+#include <Vroom/Core/Assert.h>
 
 #include "imgui.h"
 
@@ -38,8 +39,24 @@ void SceneNode::onImgui()
     ImGui::PopID();
 }
 
-void SceneNode::setChildNode(size_t field, SceneNode&& node)
+SceneNode& SceneNode::setChildNode(size_t field, SceneNode&& node)
 {
     m_Implicit->setField(field, &node.getImplicit());
+    node.setParent(this);
     m_Children.at(field) = std::move(node);
+    for (auto& child : m_Children.at(field).getChildren())
+        child.setParent(&m_Children.at(field));
+
+    return m_Children.at(field);
+}
+
+size_t SceneNode::getFieldContaining(const SceneNode* node) const
+{
+    for (size_t i = 0; i < m_Children.size(); i++)
+    {
+        if (&m_Children.at(i) == node)
+            return i;
+    }
+
+    VRM_ASSERT_MSG(false, "Node not found in children.");
 }

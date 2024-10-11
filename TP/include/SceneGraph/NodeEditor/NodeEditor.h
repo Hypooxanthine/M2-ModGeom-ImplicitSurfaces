@@ -14,6 +14,8 @@ public:
 
     inline void disable() { m_Node = nullptr; }
 
+    inline bool askedRefresh() const { return m_AskedRefresh; }
+
     void onImgui();
 
 protected:
@@ -21,4 +23,5 @@ protected:
 
 private:
     SceneNode* m_Node = nullptr;
+    bool m_AskedRefresh = false;
 };

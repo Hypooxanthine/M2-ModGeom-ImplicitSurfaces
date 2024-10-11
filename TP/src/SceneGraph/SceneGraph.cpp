@@ -16,7 +16,7 @@ SceneGraph::SceneGraph()
         m_Root.getChild(1).setChildNode(0, SceneNode::CreateLeaf<Sphere>(this, "Sphere 2", glm::vec3(1.f, 0.f, 0.f), 1.f));
         m_Root.getChild(1).setChildNode(1, SceneNode::CreateLeaf<Sphere>(this, "Sphere 3", glm::vec3(-1.f, 0.f, 0.f), 1.f));
 
-    m_NodeEditor = std::make_unique<BlendOperatorEditor>();
+    m_NodeEditor = std::make_unique<NodeEditor>();
 }
 
 void SceneGraph::notifySelection(SceneNode* node)
@@ -47,4 +47,10 @@ void SceneGraph::onImgui()
     }
 
     m_NodeEditor->onImgui();
+
+    if (m_NodeEditor->askedRefresh())
+    {
+        SceneNode* node = m_NodeEditor->getNode();
+        m_NodeEditor = std::move(node->getImplicit().instanciateEditor(node));
+    }
 }

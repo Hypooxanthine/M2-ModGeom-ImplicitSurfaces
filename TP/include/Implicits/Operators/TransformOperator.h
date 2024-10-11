@@ -5,7 +5,7 @@
 class TransformOperator : public UnaryOperator
 {
 public:
-    TransformOperator(const glm::mat4& transform, const AnalyticScalarField* field);
+    TransformOperator(const AnalyticScalarField* field, const glm::mat4& transform = glm::mat4(1.f));
 
     float Value(const glm::vec3& p) const override;
 

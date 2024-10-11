@@ -2,7 +2,7 @@
 
 #include <Vroom/Core/Log.h>
 
-TransformOperator::TransformOperator(const glm::mat4& transform, const AnalyticScalarField* field)
+TransformOperator::TransformOperator(const AnalyticScalarField* field, const glm::mat4& transform)
     : UnaryOperator(field), m_TransformInv(glm::inverse(transform))
 {}
 

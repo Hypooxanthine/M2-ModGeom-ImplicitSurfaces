@@ -75,7 +75,7 @@ public:
         }
 
         auto tupleFields = array_to_tuple<const AnalyticScalarField*, T::GetRequiredChildrenCount()>(arrayFields);
-        auto tupleArgs = std::tuple_cat(std::make_tuple(std::forward<Args>(args)...), tupleFields);
+        auto tupleArgs = std::tuple_cat(tupleFields, std::make_tuple(std::forward<Args>(args)...));
         
         n.m_Implicit = std::unique_ptr<T>(new T(std::make_from_tuple<T>(tupleArgs)));
         n.m_IsLeaf = false;
@@ -84,6 +84,8 @@ public:
     }
 
     // Getters
+
+    inline SceneGraph* getSceneGraph() { return m_SceneGraph; }
 
     inline const std::string& getNodeName() const { return m_NodeName; }
 
@@ -95,6 +97,10 @@ public:
 
     inline AnalyticScalarField& getImplicit() { return *m_Implicit; }
 
+    inline const Container& getChildren() const { return m_Children; }
+
+    inline Container& getChildren() { return m_Children; }
+
     inline const SceneNode& getChild(size_t i) const { return m_Children.at(i); }
 
     inline SceneNode& getChild(size_t i) { return m_Children.at(i); }
@@ -105,23 +111,21 @@ public:
 
     inline bool isNode() const { return !m_IsLeaf; }
 
+    inline SceneNode* getParent() { return m_Parent; }
+
+    size_t getFieldContaining(const SceneNode* node) const;
+
     // Setters
 
     inline void setNodeName(const std::string& nodeName) { m_NodeName = nodeName; }
     
-    void setChildNode(size_t field, SceneNode&& node);
+    SceneNode& setChildNode(size_t field, SceneNode&& node);
 
     inline void setSelected(bool selected) { m_Selected = selected; }
 
     // Processing
     
     float value(const glm::vec3& p) const;
-
-    // Iteration
-
-    inline iterator begin();
-
-    inline iterator end();
 
     // GUI
 
@@ -133,8 +137,11 @@ private:
         m_NodeName.reserve(50);
     }
 
+    inline void setParent(SceneNode* parent) { m_Parent = parent; }
+
 private:
     SceneGraph* m_SceneGraph = nullptr;
+    SceneNode* m_Parent = nullptr;
     std::string m_NodeName;
     NodeType::Type m_NodeType = NodeType::Type::InvalidNode;
     std::unique_ptr<AnalyticScalarField> m_Implicit;
@@ -142,94 +149,3 @@ private:
     bool m_IsLeaf = true;
     bool m_Selected = false;
 };
-
-
-
-#include <stack>
-
-class SceneNodeIterator
-{
-private:
-    SceneNodeIterator() = default;
-public:
-    SceneNodeIterator(SceneNode* root)
-        : m_Root(root)
-    {
-        m_ChildIndexStack.push(0);
-        m_NodeStack.push(root);
-    }
-
-    static SceneNodeIterator MakeEnd(SceneNode* root)
-    {
-        SceneNodeIterator it;
-        it.m_Root = root;
-
-        return it;
-    }
-
-    SceneNode& operator*()
-    {
-        return *m_NodeStack.top();
-    }
-
-    SceneNode& operator->()
-    {
-        return *m_NodeStack.top();
-    }
-
-    SceneNodeIterator& operator++()
-    {
-        while (!m_ChildIndexStack.empty() && m_NodeStack.top()->getChildrenCount() <= m_ChildIndexStack.top())
-        {
-            m_NodeStack.pop();
-            m_ChildIndexStack.pop();
-        }
-
-        if (m_ChildIndexStack.empty())
-            return *this;
-        
-        auto index = m_ChildIndexStack.top();
-        // Update the index of the next child to be visited on this layer
-        ++m_ChildIndexStack.top();
-
-        m_ChildIndexStack.emplace(index);
-        m_NodeStack.emplace(&m_NodeStack.top()->getChild(index));
-
-        return *this;
-    }
-
-    SceneNodeIterator operator++(int)
-    {
-        auto temp = *this;
-        ++(*this);
-        return temp;
-    }
-
-    bool operator==(const SceneNodeIterator& other) const
-    {
-        // Since each node is visited once,
-        // we can just check if roots are the same and the current nodes are the same.
-        return m_Root == other.m_Root && m_NodeStack.top() == other.m_NodeStack.top();
-    }
-
-    bool operator!=(const SceneNodeIterator& other) const
-    {
-        return !(*this == other);
-    }
-
-private:
-    std::stack<size_t> m_ChildIndexStack;
-    std::stack<SceneNode*> m_NodeStack;
-
-    const SceneNode* m_Root = nullptr; // Saving the root for faster == and !=
-};
-
-SceneNodeIterator SceneNode::begin()
-{
-    return SceneNodeIterator(this);
-}
-
-SceneNodeIterator SceneNode::end()
-{
-    return SceneNodeIterator::MakeEnd(this);
-}

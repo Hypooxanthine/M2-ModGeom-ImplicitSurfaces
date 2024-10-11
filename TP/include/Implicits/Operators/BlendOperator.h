@@ -5,7 +5,7 @@
 class BlendOperator : public BinaryOperator
 {
 public:
-    BlendOperator(float radius, const AnalyticScalarField* field1, const AnalyticScalarField* field2);
+    BlendOperator(const AnalyticScalarField* field1, const AnalyticScalarField* field2, float radius = 1.f);
 
     float Value(const glm::vec3& p) const override;
 

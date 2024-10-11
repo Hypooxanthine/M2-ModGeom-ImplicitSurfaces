@@ -5,7 +5,7 @@
 class Sphere : public AnalyticScalarField
 {
 public:
-    Sphere(const glm::vec3& center, float radius);
+    Sphere(const glm::vec3& center = glm::vec3(0.f), float radius = 1.f);
 
     virtual float Value(const glm::vec3&) const override;
 

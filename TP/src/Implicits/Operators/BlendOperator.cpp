@@ -2,7 +2,7 @@
 
 #include "SceneGraph/NodeEditor/BlendOperatorEditor.h"
 
-BlendOperator::BlendOperator(float radius, const AnalyticScalarField* field1, const AnalyticScalarField* field2)
+BlendOperator::BlendOperator(const AnalyticScalarField* field1, const AnalyticScalarField* field2, float radius)
     : BinaryOperator(field1, field2), m_Radius(radius)
 {}
 

@@ -25,11 +25,6 @@ public:
 
     void onImgui();
 
-    // Iteration
-
-    inline iterator begin() { return m_Root.begin(); }
-    inline iterator end() { return m_Root.end(); }
-
 private:
     SceneNode m_Root;
     std::unique_ptr<NodeEditor> m_NodeEditor = nullptr;
