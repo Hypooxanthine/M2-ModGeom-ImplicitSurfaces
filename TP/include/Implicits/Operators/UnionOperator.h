@@ -8,4 +8,6 @@ public:
     UnionOperator(const AnalyticScalarField* field1, const AnalyticScalarField* field2);
 
     float Value(const glm::vec3& p) const override;
+
+    inline static consteval NodeType::Type GetNodeType() { return NodeType::Type::Union; }
 };

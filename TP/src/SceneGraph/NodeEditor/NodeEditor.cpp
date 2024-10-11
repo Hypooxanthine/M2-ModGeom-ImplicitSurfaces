@@ -14,6 +14,19 @@ void NodeEditor::onImgui()
 
     if (ImGui::Begin("Node editor"))
     {
+        ImGui::TextWrapped("Node type");
+        ImGui::SameLine();
+        if (ImGui::BeginCombo("##Node type", NodeType::GetUINameOfNodeType(m_Node->getNodeType()).data()))
+        {
+            for (int i = 0; i < static_cast<int>(NodeType::Type::COUNT); i++)
+            {
+                if (ImGui::Selectable(NodeType::GetUINameOfNodeType(static_cast<NodeType::Type>(i)).data()))
+                    ;
+            };
+
+            ImGui::EndCombo();
+        }
+
         ImGui::TextWrapped("Name");
         ImGui::SameLine();
         ImGui::InputText(

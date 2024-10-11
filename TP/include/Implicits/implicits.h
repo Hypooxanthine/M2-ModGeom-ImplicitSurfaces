@@ -14,6 +14,7 @@
 #include <glm/glm.hpp>
 
 #include "box.h"
+#include "SceneGraph/NodeType.h"
 
 class SceneNode;
 class NodeEditor;

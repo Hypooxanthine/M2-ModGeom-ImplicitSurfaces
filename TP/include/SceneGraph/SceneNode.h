@@ -6,6 +6,7 @@
 
 #include "Implicits/implicits.h"
 #include "Implicits/Primitives/VoidImplicit.h"
+#include "SceneGraph/NodeType.h"
 
 class SceneGraph;
 
@@ -29,6 +30,7 @@ class SceneNode
 public:
     using Container = std::vector<SceneNode>;
     using iterator = SceneNodeIterator;
+
 public:
 
     SceneNode(SceneNode&& other) = default;
@@ -48,6 +50,7 @@ public:
         SceneNode n;
         n.m_SceneGraph = graph;
         n.m_NodeName = nodeName;
+        n.m_NodeType = T::GetNodeType();
         n.m_Implicit = std::unique_ptr<T>(new T(std::forward<Args>(args)...));
         n.m_IsLeaf = true;
 
@@ -61,6 +64,7 @@ public:
         SceneNode n;
         n.m_SceneGraph = graph;
         n.m_NodeName = nodeName;
+        n.m_NodeType = T::GetNodeType();
         n.m_Children.reserve(T::GetRequiredChildrenCount());
         std::array<const AnalyticScalarField*, T::GetRequiredChildrenCount()> arrayFields; 
 
@@ -84,6 +88,8 @@ public:
     inline const std::string& getNodeName() const { return m_NodeName; }
 
     inline std::string& getNodeName() { return m_NodeName; }
+
+    inline NodeType::Type getNodeType() const { return m_NodeType; }
 
     inline const AnalyticScalarField& getImplicit() const { return *m_Implicit; }
 
@@ -130,6 +136,7 @@ private:
 private:
     SceneGraph* m_SceneGraph = nullptr;
     std::string m_NodeName;
+    NodeType::Type m_NodeType = NodeType::Type::InvalidNode;
     std::unique_ptr<AnalyticScalarField> m_Implicit;
     Container m_Children;
     bool m_IsLeaf = true;

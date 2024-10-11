@@ -17,6 +17,8 @@ public:
 
     std::unique_ptr<NodeEditor> instanciateEditor(SceneNode* node);
 
+    inline static consteval NodeType::Type GetNodeType() { return NodeType::Type::Sphere; }
+
 private:
     glm::vec3 m_Center;
     float m_Radius;
