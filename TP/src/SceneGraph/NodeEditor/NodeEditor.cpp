@@ -1,5 +1,7 @@
 #include "SceneGraph/NodeEditor/NodeEditor.h"
 
+#include <Vroom/Core/Log.h>
+
 #include "imgui.h"
 
 #include "SceneGraph/SceneNode.h"
@@ -21,7 +23,8 @@ void NodeEditor::onImgui()
             for (int i = 0; i < static_cast<int>(NodeType::Type::COUNT); i++)
             {
                 if (ImGui::Selectable(NodeType::GetUINameOfNodeType(static_cast<NodeType::Type>(i)).data()))
-                    ;
+                    VRM_LOG_WARN("Cannot switch node to type {} : not implemented yet.", 
+                        NodeType::GetUINameOfNodeType(static_cast<NodeType::Type>(i)));
             };
 
             ImGui::EndCombo();
