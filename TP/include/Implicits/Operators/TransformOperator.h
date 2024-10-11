@@ -9,6 +9,8 @@ public:
 
     float Value(const glm::vec3& p) const override;
 
+    inline static consteval NodeType::Type GetNodeType() { return NodeType::Type::Transform; }
+
 private:
     glm::mat4 m_TransformInv;
 };

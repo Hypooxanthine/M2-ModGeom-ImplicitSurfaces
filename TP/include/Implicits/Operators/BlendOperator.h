@@ -13,6 +13,8 @@ public:
 
     std::unique_ptr<NodeEditor> instanciateEditor(SceneNode* node);
 
+    inline static consteval NodeType::Type GetNodeType() { return NodeType::Type::Blend; }
+
 private:
     float m_Radius;
 };
