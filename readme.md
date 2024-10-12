@@ -7,7 +7,7 @@ This project is an implementation of implicit surfaces. Visualization with march
 
 ## Screenshots
 
-![Screenshot 1](Screenshots/editor.png)
+![Screenshot 1](Screenshots/Editor.png)
 
 ## Building project
 
