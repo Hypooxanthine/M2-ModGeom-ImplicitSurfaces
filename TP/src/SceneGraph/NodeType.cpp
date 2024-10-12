@@ -33,7 +33,7 @@ std::string_view NodeType::GetUINameOfNodeType(const Type& nodeType)
     }
 }
 
-SceneNode NodeType::CreateNodeOfType(const Type& nodeType, SceneGraph* graph)
+std::unique_ptr<SceneNode> NodeType::CreateNodeOfType(const Type& nodeType, SceneGraph* graph)
 {
     const std::string nodeName = std::string(GetUINameOfNodeType(nodeType));
     switch (nodeType)

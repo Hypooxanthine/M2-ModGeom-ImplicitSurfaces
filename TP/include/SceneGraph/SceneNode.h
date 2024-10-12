@@ -23,13 +23,10 @@ inline constexpr auto array_to_tuple(const std::array<T, N>& a)
     return array_to_tuple_impl(a, Indx{});
 }
 
-class SceneNodeIterator;
-
 class SceneNode
 {
 public:
-    using Container = std::vector<SceneNode>;
-    using iterator = SceneNodeIterator;
+    using Container = std::vector<std::unique_ptr<SceneNode>>;
 
 public:
 
@@ -44,43 +41,44 @@ public:
      * Only for leaves, analytic scalar field must be a primitive
      */
     template <typename T, typename... Args>
-    static SceneNode CreateLeaf(SceneGraph* graph, const std::string& nodeName, Args&&... args)
+    static std::unique_ptr<SceneNode> CreateLeaf(SceneGraph* graph, const std::string& nodeName, Args&&... args)
     {
         static_assert(T::GetRequiredChildrenCount() == 0);
-        SceneNode n;
-        n.m_SceneGraph = graph;
-        n.m_NodeName = nodeName;
-        n.m_NodeType = T::GetNodeType();
-        n.m_Implicit = std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-        n.m_IsLeaf = true;
+        SceneNode* n = new SceneNode();
+        n->m_SceneGraph = graph;
+        n->m_NodeName = nodeName;
+        n->m_NodeType = T::GetNodeType();
+        n->m_Implicit = std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+        n->m_IsLeaf = true;
 
-        return n;
+        return std::unique_ptr<SceneNode>(n);
     }
 
     template <typename T, typename... Args>
-    static SceneNode CreateNode(SceneGraph* graph, const std::string& nodeName, Args&&... args)
+    static std::unique_ptr<SceneNode> CreateNode(SceneGraph* graph, const std::string& nodeName, Args&&... args)
     {
         static_assert(T::GetRequiredChildrenCount() > 0);
-        SceneNode n;
-        n.m_SceneGraph = graph;
-        n.m_NodeName = nodeName;
-        n.m_NodeType = T::GetNodeType();
-        n.m_Children.reserve(T::GetRequiredChildrenCount());
+        SceneNode* n = new SceneNode();
+        n->m_SceneGraph = graph;
+        n->m_NodeName = nodeName;
+        n->m_NodeType = T::GetNodeType();
+        n->m_Children.reserve(T::GetRequiredChildrenCount());
         std::array<const AnalyticScalarField*, T::GetRequiredChildrenCount()> arrayFields; 
 
         for (size_t i = 0; i < T::GetRequiredChildrenCount(); i++)
         {
-            n.m_Children.emplace_back(CreateLeaf<VoidImplicit>(graph, "Empty"));
-            arrayFields[i] = &n.m_Children.back().getImplicit();
+            n->m_Children.emplace_back(CreateLeaf<VoidImplicit>(graph, "Empty"));
+            n->m_Children.back()->setParent(n);
+            arrayFields[i] = n->m_Children.back()->getImplicit();
         }
 
         auto tupleFields = array_to_tuple<const AnalyticScalarField*, T::GetRequiredChildrenCount()>(arrayFields);
         auto tupleArgs = std::tuple_cat(tupleFields, std::make_tuple(std::forward<Args>(args)...));
         
-        n.m_Implicit = std::unique_ptr<T>(new T(std::make_from_tuple<T>(tupleArgs)));
-        n.m_IsLeaf = false;
+        n->m_Implicit = std::unique_ptr<T>(new T(std::make_from_tuple<T>(tupleArgs)));
+        n->m_IsLeaf = false;
 
-        return n;
+        return std::unique_ptr<SceneNode>(n);
     }
 
     // Getters
@@ -93,17 +91,17 @@ public:
 
     inline NodeType::Type getNodeType() const { return m_NodeType; }
 
-    inline const AnalyticScalarField& getImplicit() const { return *m_Implicit; }
+    inline const AnalyticScalarField* getImplicit() const { return m_Implicit.get(); }
 
-    inline AnalyticScalarField& getImplicit() { return *m_Implicit; }
+    inline AnalyticScalarField* getImplicit() { return m_Implicit.get(); }
 
     inline const Container& getChildren() const { return m_Children; }
 
     inline Container& getChildren() { return m_Children; }
 
-    inline const SceneNode& getChild(size_t i) const { return m_Children.at(i); }
+    inline const SceneNode* getChild(size_t i) const { return m_Children.at(i).get(); }
 
-    inline SceneNode& getChild(size_t i) { return m_Children.at(i); }
+    inline SceneNode* getChild(size_t i) { return m_Children.at(i).get(); }
 
     inline size_t getChildrenCount() const { return m_Children.size(); }
 
@@ -119,7 +117,9 @@ public:
 
     inline void setNodeName(const std::string& nodeName) { m_NodeName = nodeName; }
     
-    SceneNode& setChildNode(size_t field, SceneNode&& node);
+    SceneNode* setChildNode(size_t field, std::unique_ptr<SceneNode>&& node);
+
+    SceneNode* setNode(std::unique_ptr<SceneNode>&& node);
 
     inline void setSelected(bool selected) { m_Selected = selected; }
 

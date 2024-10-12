@@ -28,9 +28,8 @@ void NodeEditor::onImgui()
                 if (ImGui::Selectable(NodeType::GetUINameOfNodeType(static_cast<NodeType::Type>(i)).data()))
                 {
                     auto node = NodeType::CreateNodeOfType(static_cast<NodeType::Type>(i), m_Node->getSceneGraph());
-                    size_t field = m_Node->getParent()->getFieldContaining(m_Node);
 
-                    m_Node = &(m_Node->getParent()->setChildNode(field, std::move(node)));
+                    m_Node->setNode(std::move(node));
 
                     m_AskedRefresh = true;
                 }

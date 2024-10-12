@@ -8,14 +8,12 @@
 class SceneGraph
 {
 public:
-    using iterator = SceneNode::iterator;
-public:
     SceneGraph();
     ~SceneGraph() = default;
 
     // Getters
 
-    inline const SceneNode& getRoot() const { return m_Root; }
+    inline const SceneNode* getRoot() const { return m_Root.get(); }
 
     // For nodes
 
@@ -26,6 +24,6 @@ public:
     void onImgui();
 
 private:
-    SceneNode m_Root;
+    std::unique_ptr<SceneNode> m_Root;
     std::unique_ptr<NodeEditor> m_NodeEditor = nullptr;
 };

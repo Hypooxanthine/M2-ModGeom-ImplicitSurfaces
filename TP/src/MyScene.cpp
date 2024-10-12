@@ -132,9 +132,9 @@ void MyScene::updateMesh()
 {
     auto start = std::chrono::high_resolution_clock::now();
 
-    const auto& imp = m_SceneGraph.getRoot().getImplicit();
+    const auto* imp = m_SceneGraph.getRoot()->getImplicit();
     vrm::MeshData m;
-    imp.Polygonize(m_DiscretizationParameter, m, Box(m_BoxStart, m_BoxEnd));
+    imp->Polygonize(m_DiscretizationParameter, m, Box(m_BoxStart, m_BoxEnd));
     m_MeshAsset.clear();
     m_MeshAsset.addSubmesh(std::move(m));
 

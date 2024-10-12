@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string_view>
+#include <memory>
 
 class SceneNode;
 class SceneGraph;
@@ -18,5 +19,5 @@ public:
 
 public:
     static std::string_view GetUINameOfNodeType(const Type& nodeType);
-    static SceneNode CreateNodeOfType(const Type& nodeType, SceneGraph* graph);
+    static std::unique_ptr<SceneNode> CreateNodeOfType(const Type& nodeType, SceneGraph* graph);
 };

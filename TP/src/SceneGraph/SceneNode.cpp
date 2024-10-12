@@ -31,7 +31,7 @@ void SceneNode::onImgui()
         }
 
         for (auto& childNode : m_Children)
-            childNode.onImgui();
+            childNode->onImgui();
 
         ImGui::TreePop();
     }
@@ -39,22 +39,39 @@ void SceneNode::onImgui()
     ImGui::PopID();
 }
 
-SceneNode& SceneNode::setChildNode(size_t field, SceneNode&& node)
+SceneNode* SceneNode::setChildNode(size_t field, std::unique_ptr<SceneNode>&& node)
 {
-    m_Implicit->setField(field, &node.getImplicit());
-    node.setParent(this);
+    m_Implicit->setField(field, node->getImplicit());
+    node->setParent(this);
     m_Children.at(field) = std::move(node);
-    for (auto& child : m_Children.at(field).getChildren())
-        child.setParent(&m_Children.at(field));
+    for (auto& child : m_Children.at(field)->getChildren())
+        child->setParent(m_Children.at(field).get());
 
-    return m_Children.at(field);
+    return m_Children.at(field).get();
+}
+
+SceneNode* SceneNode::setNode(std::unique_ptr<SceneNode>&& node)
+{
+    VRM_ASSERT_MSG(node->getSceneGraph() == m_SceneGraph, "Scene graph mismatch.");
+    
+    if (m_Parent != nullptr)
+        m_Parent->getImplicit()->setField(m_Parent->getFieldContaining(this), node->getImplicit());
+
+    auto* parent = m_Parent;
+    *this = std::move(*node.get());
+    m_Parent = parent;
+
+    for (auto& child : m_Children)
+        child->setParent(this);
+
+    return this;
 }
 
 size_t SceneNode::getFieldContaining(const SceneNode* node) const
 {
     for (size_t i = 0; i < m_Children.size(); i++)
     {
-        if (&m_Children.at(i) == node)
+        if (m_Children.at(i).get() == node)
             return i;
     }
 
