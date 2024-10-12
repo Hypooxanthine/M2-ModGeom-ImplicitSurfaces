@@ -119,7 +119,7 @@ public:
     
     SceneNode* setChildNode(size_t field, std::unique_ptr<SceneNode>&& node);
 
-    SceneNode* setNode(std::unique_ptr<SceneNode>&& node);
+    SceneNode* setNode(std::unique_ptr<SceneNode>&& node, bool preserveChildren = true);
 
     inline void setSelected(bool selected) { m_Selected = selected; }
 

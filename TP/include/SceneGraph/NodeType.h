@@ -13,7 +13,7 @@ public:
     {
         Union = 0, Intersection, Blend, Difference, Transform,
         Empty, Sphere,
-        COUNT,
+        COUNT, OPERATORS_COUNT = Empty - Union, PRIMITIVES_COUNT = COUNT - Empty,
         InvalidNode = -1
     };
 

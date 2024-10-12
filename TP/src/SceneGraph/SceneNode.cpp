@@ -50,9 +50,13 @@ SceneNode* SceneNode::setChildNode(size_t field, std::unique_ptr<SceneNode>&& no
     return m_Children.at(field).get();
 }
 
-SceneNode* SceneNode::setNode(std::unique_ptr<SceneNode>&& node)
+SceneNode* SceneNode::setNode(std::unique_ptr<SceneNode>&& node, bool preserveChildren)
 {
     VRM_ASSERT_MSG(node->getSceneGraph() == m_SceneGraph, "Scene graph mismatch.");
+
+    if (preserveChildren)
+        for (int i = 0; i < getChildrenCount() && i < node->getChildrenCount(); i++)
+            node->setChildNode(i, std::move(m_Children.at(i)));
     
     if (m_Parent != nullptr)
         m_Parent->getImplicit()->setField(m_Parent->getFieldContaining(this), node->getImplicit());
