@@ -3,7 +3,11 @@
 ## Description
 
 University assignment.
-This project is an implementation of implicit surfaces with (provided) cube marching algorithm. Editable scene hierarchy in ImGui interface.
+This project is an implementation of implicit surfaces. Visualization with marching cubes algorithm. Editable scene hierarchy in ImGui interface.*
+
+## Screenshots
+
+![Screenshot 1](Screenshots/editor.png)
 
 ## Building project
 
