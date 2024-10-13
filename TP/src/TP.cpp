@@ -27,8 +27,8 @@ int main(int argc, char** argv)
 		.bindInput(vrm::KeyCode::Space);
 	gameLayer.createTrigger("MoveDown")
 		.bindInput(vrm::KeyCode::LeftShift);
-	gameLayer.createTrigger("MouseLeft")
-		.bindInput(vrm::MouseCode::Left);
+	gameLayer.createTrigger("MouseRight")
+		.bindInput(vrm::MouseCode::Right);
 	
 	gameLayer.createTrigger("KeyLeft")
 		.bindInput(vrm::KeyCode::Left);

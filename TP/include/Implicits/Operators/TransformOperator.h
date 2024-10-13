@@ -25,6 +25,10 @@ public:
 
     inline const glm::vec3& getRotation() const { return m_Rotation; }
 
+    inline const glm::mat4& getTransformInv() const { return m_TransformInv; }
+
+    inline glm::mat4 getTransform() const { return glm::inverse(getTransformInv()); }
+
 private:
     void updateTransform() const;
 

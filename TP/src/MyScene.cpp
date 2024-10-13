@@ -13,6 +13,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "imgui.h"
+#include "ImGuizmo.h"
 
 #include "Implicits/Primitives/Sphere.h"
 #include "Implicits/Operators/TransformOperator.h"
@@ -44,7 +45,7 @@ MyScene::MyScene()
     gameLayer.getTrigger("MoveDown")
         .bindCallback([this](bool triggered) { upValue -= triggered ? 1.f : -1.f; });
     
-    gameLayer.getTrigger("MouseLeft")
+    gameLayer.getTrigger("MouseRight")
         .bindCallback([this](bool triggered) {
             if (!m_ControlsEnabled)
                 return;
@@ -121,6 +122,7 @@ void MyScene::onUpdate(float dt)
 
 void MyScene::onRender()
 {
+    ImGuizmo::BeginFrame();
     ImGui::PushFont(m_Font);
 
     onImGui();
@@ -149,7 +151,7 @@ void MyScene::onImGui()
     ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
     ImGui::Begin("Controls");
-        ImGui::TextWrapped("While left clicking:");
+        ImGui::TextWrapped("While right clicking:");
         ImGui::TextWrapped("WASD to move the camera");
         ImGui::TextWrapped("Space to move up, Left Shift to move down");
         ImGui::Checkbox("Enable controls", &m_ControlsEnabled);

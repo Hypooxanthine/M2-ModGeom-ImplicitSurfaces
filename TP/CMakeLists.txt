@@ -4,6 +4,29 @@ cmake_minimum_required(VERSION 3.8)
 
 project(TP)
 
+# ----- Dependency lib directories -----
+
+include(FetchContent)
+
+# ImGuizmo
+FetchContent_Declare(
+    imguizmo_git
+    GIT_REPOSITORY  https://github.com/CedricGuillemet/ImGuizmo
+    GIT_TAG         master
+)
+FetchContent_MakeAvailable(imguizmo_git)
+
+add_library(ImGuizmo
+    ${imguizmo_git_SOURCE_DIR}/GraphEditor.cpp
+    ${imguizmo_git_SOURCE_DIR}/ImCurveEdit.cpp
+    ${imguizmo_git_SOURCE_DIR}/ImGradient.cpp
+    ${imguizmo_git_SOURCE_DIR}/ImGuizmo.cpp
+    ${imguizmo_git_SOURCE_DIR}/ImSequencer.cpp
+)
+
+target_include_directories(ImGuizmo PUBLIC ${imguizmo_git_SOURCE_DIR})
+target_link_libraries(ImGuizmo PUBLIC ImGuiGLFWGlew)
+
 # ----- Project directories -----
 
 set(SOURCE_DIR src)
@@ -23,7 +46,7 @@ set(SOURCES ${PROJECT_IMPL})
 
 add_executable(TP                      ${PROJECT_IMPL} ${PROJECT_HEADERS})
 target_include_directories(TP  PUBLIC  ${INCLUDE_DIR})
-target_link_libraries(TP               Vroom)
+target_link_libraries(TP               Vroom ImGuizmo)
 
 # Compile options
 if (MSVC)

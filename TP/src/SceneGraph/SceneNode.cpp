@@ -34,7 +34,6 @@ void SceneNode::onImgui()
 
                 if (!srcNode->isAncestorOf(dstNode) && srcNode != dstNode)
                 {
-                    VRM_LOG_TRACE("test");
                     auto* srcParent = srcNode->getParent();
                     auto fieldSrc = srcParent->getFieldContaining(srcNode);
 
