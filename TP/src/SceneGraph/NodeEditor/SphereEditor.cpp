@@ -12,9 +12,9 @@ void SphereEditor::onImgui_Impl()
 {
     ImGui::TextWrapped("Sphere center");
     ImGui::SameLine();
-    ImGui::SliderFloat3("##Spherecenter", reinterpret_cast<float*>(&m_Implicit->getCenterRef()), -10.f, 10.f, "%.2f");
+    ImGui::DragFloat3("##Spherecenter", &m_Implicit->getCenterRef().x, .1f);
 
     ImGui::TextWrapped("Sphere radius");
     ImGui::SameLine();
-    ImGui::SliderFloat("##Sphereradius", &m_Implicit->getRadiusRef(), 0.f, 10.f, "%.2f");
+    ImGui::DragFloat("##Sphereradius", &m_Implicit->getRadiusRef(), .1f);
 }

@@ -12,5 +12,5 @@ void BlendOperatorEditor::onImgui_Impl()
 {
     ImGui::TextWrapped("Blending radius");
     ImGui::SameLine();
-    ImGui::SliderFloat("##Blendingradius", &m_Implicit->getRadiusRef(), 0.f, 10.f, "%.2f", ImGuiSliderFlags_Logarithmic);
+    ImGui::DragFloat("##Blendingradius", &m_Implicit->getRadiusRef(), 0.1f);
 }
