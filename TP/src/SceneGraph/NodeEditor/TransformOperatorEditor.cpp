@@ -43,14 +43,11 @@ void TransformOperatorEditor::onImgui_Impl()
         &view[0][0],
         &projection[0][0],
         ImGuizmo::OPERATION::TRANSLATE | ImGuizmo::OPERATION::ROTATE | ImGuizmo::OPERATION::SCALE,
-        ImGuizmo::MODE::LOCAL,
+        ImGuizmo::MODE::WORLD,
         &transform[0][0]
     ))
     {
-        ImGuizmo::DecomposeMatrixToComponents(&transform[0][0], &translation[0], &rotation[0], &scale[0]);
-        m_Implicit->setTranslation(translation);
-        m_Implicit->setRotation(glm::radians(rotation));
-        m_Implicit->setScale(scale);
+        m_Implicit->setTransform(transform);
     }
 
 }

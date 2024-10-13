@@ -19,6 +19,8 @@ public:
 
     inline void setRotation(const glm::vec3& rotation) { m_Rotation = rotation; m_TransformDirty = true; }
 
+    void setTransform(const glm::mat4& transform);
+
     inline const glm::vec3& getTranslation() const { return m_Translation; }
 
     inline const glm::vec3& getScale() const { return m_Scale; }
@@ -27,12 +29,13 @@ public:
 
     inline const glm::mat4& getTransformInv() const { return m_TransformInv; }
 
-    inline glm::mat4 getTransform() const { return glm::inverse(getTransformInv()); }
+    inline glm::mat4 getTransform() const { return m_Transform; }
 
 private:
     void updateTransform() const;
 
 private:
+    mutable glm::mat4 m_Transform;
     mutable glm::mat4 m_TransformInv;
     mutable bool m_TransformDirty = true;
 
