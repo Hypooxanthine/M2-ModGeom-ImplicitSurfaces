@@ -24,7 +24,7 @@ void NodeEditor::onImgui()
             {
                 if (i == static_cast<int>(NodeType::Type::OPERATORS_COUNT))
                     ImGui::Separator();
-                    
+
                 if (i == static_cast<int>(m_Node->getNodeType()))
                     continue;
 

@@ -37,16 +37,21 @@ void SceneGraph::notifySelection(SceneNode* node)
     }
 }
 
+void SceneGraph::closeNodeEditor()
+{
+    m_NodeEditor->disable();
+}
+
 void SceneGraph::onImgui()
 {
+    m_NodeEditor->onImgui();
+
     if (ImGui::Begin("Scene graph"))
     {
         m_Root->onImgui();
 
         ImGui::End();
     }
-
-    m_NodeEditor->onImgui();
 
     if (m_NodeEditor->askedRefresh())
     {

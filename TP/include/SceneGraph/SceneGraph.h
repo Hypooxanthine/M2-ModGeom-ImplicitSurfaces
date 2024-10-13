@@ -18,6 +18,7 @@ public:
     // For nodes
 
     void notifySelection(SceneNode* node);
+    void closeNodeEditor();
 
     // GUI
 

@@ -25,9 +25,48 @@ void SceneNode::onImgui()
     
     if (ImGui::TreeNodeEx(getNodeName().c_str(), flags))
     {
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NODE"))
+            {
+                SceneNode* srcNode = *(SceneNode**)payload->Data;
+                SceneNode* dstNode = this;
+
+                if (!srcNode->isAncestorOf(dstNode) && srcNode != dstNode)
+                {
+                    VRM_LOG_TRACE("test");
+                    auto* srcParent = srcNode->getParent();
+                    auto fieldSrc = srcParent->getFieldContaining(srcNode);
+
+                    bool dstIsAncestorOfSrc = dstNode->isAncestorOf(srcNode);
+
+                    setNode(std::move(srcNode->getParent()->m_Children.at(fieldSrc)), false);
+
+                    if (!dstIsAncestorOfSrc)
+                        srcParent->setChildNode(fieldSrc, CreateLeaf<VoidImplicit>(m_SceneGraph, "Empty"));
+
+                    m_SceneGraph->closeNodeEditor();
+                }
+            }
+            ImGui::EndDragDropTarget();
+        }
+
         if (ImGui::IsItemClicked())
         {
             m_SceneGraph->notifySelection(this);
+        }
+
+        ImGui::SameLine();
+        if (ImGui::SmallButton("="))
+        {
+        }
+        
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceNoDisableHover | ImGuiDragDropFlags_SourceNoHoldToOpenOthers))
+        {
+            SceneNode* node = this;
+            ImGui::SetDragDropPayload("NODE", &node, sizeof(node));
+            ImGui::Text("%s", getNodeName().data());
+            ImGui::EndDragDropSource();
         }
 
         for (auto& childNode : m_Children)
@@ -80,4 +119,15 @@ size_t SceneNode::getFieldContaining(const SceneNode* node) const
     }
 
     VRM_ASSERT_MSG(false, "Node not found in children.");
+}
+
+bool SceneNode::isAncestorOf(const SceneNode* node) const
+{
+    if (node == nullptr)
+        return false;
+
+    if (node->getParent() == this)
+        return true;
+
+    return isAncestorOf(node->getParent());
 }

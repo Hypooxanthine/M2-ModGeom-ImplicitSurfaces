@@ -109,7 +109,11 @@ public:
 
     inline bool isNode() const { return !m_IsLeaf; }
 
+    inline const SceneNode* getParent() const { return m_Parent; }
+
     inline SceneNode* getParent() { return m_Parent; }
+
+    bool isAncestorOf(const SceneNode* node) const;
 
     size_t getFieldContaining(const SceneNode* node) const;
 
