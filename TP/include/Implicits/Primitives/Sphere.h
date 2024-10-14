@@ -15,8 +15,6 @@ public:
 
     inline void setCenter(const glm::vec3& center) { m_Center = center; }
 
-    inline static consteval int GetRequiredChildrenCount() { return 0; }
-
     std::unique_ptr<NodeEditor> instanciateEditor(SceneNode* node);
 
     inline static consteval NodeType::Type GetNodeType() { return NodeType::Type::Sphere; }
