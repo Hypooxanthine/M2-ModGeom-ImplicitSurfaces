@@ -2,7 +2,7 @@
 
 #include "Implicits/Operators/Operator.h"
 
-class BlendOperator : public BinaryOperator
+class BlendOperator : public Operator<2, 2>
 {
 public:
     BlendOperator(const AnalyticScalarField* field1, const AnalyticScalarField* field2, float radius = 1.f);

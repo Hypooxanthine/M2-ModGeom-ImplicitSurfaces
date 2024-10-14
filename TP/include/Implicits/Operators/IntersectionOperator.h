@@ -2,10 +2,14 @@
 
 #include "Implicits/Operators/Operator.h"
 
-class IntersectionOperator : public BinaryOperator
+class IntersectionOperator : public ArbitraryChildrenCountOperator<1>
 {
 public:
-    IntersectionOperator(const AnalyticScalarField* field1, const AnalyticScalarField* field2);
+
+    template <typename... Fields>
+    IntersectionOperator(const Fields*... fields)
+        : ArbitraryChildrenCountOperator<1>(fields...)
+    {}
 
     float Value(const glm::vec3& p) const override;
 

@@ -1,10 +1,13 @@
 #include "Implicits/Operators/UnionOperator.h"
 
-UnionOperator::UnionOperator(const AnalyticScalarField* field1, const AnalyticScalarField* field2)
-    : BinaryOperator(field1, field2)
-{}
-
 float UnionOperator::Value(const glm::vec3& p) const
 {
-    return std::min(fieldValue<0>(p), fieldValue<1>(p));
+    float minVal = fieldValue(0, p);
+
+    for (size_t i = 1; i < getFieldsCount(); i++)
+    {
+        minVal = std::min(minVal, fieldValue(i, p));
+    }
+
+    return minVal;
 }

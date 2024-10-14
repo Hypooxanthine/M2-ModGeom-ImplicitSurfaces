@@ -2,10 +2,13 @@
 
 #include "Implicits/Operators/Operator.h"
 
-class UnionOperator : public BinaryOperator
+class UnionOperator : public ArbitraryChildrenCountOperator<1>
 {
 public:
-    UnionOperator(const AnalyticScalarField* field1, const AnalyticScalarField* field2);
+    template <typename... Fields>
+    UnionOperator(const Fields*... fields)
+        : ArbitraryChildrenCountOperator<1>(fields...)
+    {}
 
     float Value(const glm::vec3& p) const override;
 

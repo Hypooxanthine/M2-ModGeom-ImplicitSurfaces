@@ -39,6 +39,8 @@ public:
 
   // Only for ASF that hold children.
   virtual void setField(size_t field, const AnalyticScalarField* asf) { throw std::runtime_error("Unauthorized operation"); }
+  virtual void addField(const AnalyticScalarField* asf) { throw std::runtime_error("Unauthorized operation"); }
+  virtual void removeField(size_t field) { throw std::runtime_error("Unauthorized operation"); }
 
   virtual std::unique_ptr<NodeEditor> instanciateEditor(SceneNode* node);
 protected:

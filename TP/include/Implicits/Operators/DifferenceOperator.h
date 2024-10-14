@@ -2,7 +2,7 @@
 
 #include "Implicits/Operators/Operator.h"
 
-class DifferenceOperator : public BinaryOperator
+class DifferenceOperator : public Operator<2, 2>
 {
 public:
     DifferenceOperator(const AnalyticScalarField* field1, const AnalyticScalarField* field2);

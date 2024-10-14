@@ -8,7 +8,7 @@
 #include "SceneGraph/NodeEditor/TransformOperatorEditor.h"
 
 TransformOperator::TransformOperator(const AnalyticScalarField* field, const glm::vec3& translation, const glm::vec3& scale, const glm::vec3& rotation)
-    : UnaryOperator(field), m_Translation(translation), m_Scale(scale), m_Rotation(rotation)
+    : Operator<1, 1>(field), m_Translation(translation), m_Scale(scale), m_Rotation(rotation)
 {}
 
 float TransformOperator::Value(const glm::vec3& p) const
@@ -17,7 +17,7 @@ float TransformOperator::Value(const glm::vec3& p) const
         updateTransform();
         
     const glm::vec3& transformedP = glm::vec3(m_TransformInv * glm::vec4(p, 1.f));
-    return fieldValue<0>(transformedP);
+    return fieldValue(0, transformedP);
 }
 
 std::unique_ptr<NodeEditor> TransformOperator::instanciateEditor(SceneNode* node)

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <array>
+#include <vector>
 #include <Vroom/Core/Assert.h>
 
 #include "Implicits/implicits.h"
 
-template <int N>
+template <int MIN, int MAX>
 class Operator : public AnalyticScalarField
 {
 public:
@@ -16,26 +16,39 @@ public:
         : m_Fields{ std::forward<Fields>(fields)... }
     {}
 
+    inline static consteval int GetMinChildrenCount() { return MIN; }
+
+    inline static consteval int GetMaxChildrenCount() { return MAX; }
+
     virtual float Value(const glm::vec3& p) const override = 0;
 
-    inline static consteval int GetRequiredChildrenCount() { return N; }
-
-    inline void setField(size_t field, const AnalyticScalarField* asf) override
+    inline void setField(size_t f, const AnalyticScalarField* asf) override
     {
-        VRM_ASSERT_MSG(field < N, "Requested to edit field {} but the operator only holds {}.", field, N);
-        m_Fields.at(field) = asf;
+        VRM_ASSERT_MSG(f < m_Fields.size(), "Requested to edit field {} but the operator only holds {}.", f, m_Fields.size());
+        m_Fields.at(f) = asf;
     }
 
-protected:
-    template <int F>
-    inline float fieldValue(const glm::vec3& p) const
+    void addField(const AnalyticScalarField* asf) override
     {
-        return m_Fields[F]->Value(p);
+        m_Fields.push_back(asf);
+    }
+
+    void removeField(size_t field) override
+    {
+        m_Fields.erase(std::next(m_Fields.begin(), field));
+    }
+
+    inline size_t getFieldsCount() const { return m_Fields.size(); }
+
+protected:
+    inline float fieldValue(size_t f, const glm::vec3& p) const
+    {
+        return m_Fields[f]->Value(p);
     }
 
 private:
-    std::array<const AnalyticScalarField*, N> m_Fields;
+    std::vector<const AnalyticScalarField*> m_Fields;
 };
 
-using UnaryOperator = Operator<1>;
-using BinaryOperator = Operator<2>;
+template <int MIN>
+using ArbitraryChildrenCountOperator = Operator<MIN, std::numeric_limits<int>::max()>;

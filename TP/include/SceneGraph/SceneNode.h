@@ -43,13 +43,17 @@ public:
     template <typename T, typename... Args>
     static std::unique_ptr<SceneNode> CreateLeaf(SceneGraph* graph, const std::string& nodeName, Args&&... args)
     {
-        static_assert(T::GetRequiredChildrenCount() == 0);
+        static_assert(
+            T::GetMinChildrenCount() == 0
+            && T::GetMaxChildrenCount() == 0);
         SceneNode* n = new SceneNode();
         n->m_SceneGraph = graph;
         n->m_NodeName = nodeName;
         n->m_NodeType = T::GetNodeType();
         n->m_Implicit = std::unique_ptr<T>(new T(std::forward<Args>(args)...));
         n->m_IsLeaf = true;
+        n->m_MinChildrenCount = 0;
+        n->m_MaxChildrenCount = 0;
 
         return std::unique_ptr<SceneNode>(n);
     }
@@ -57,26 +61,28 @@ public:
     template <typename T, typename... Args>
     static std::unique_ptr<SceneNode> CreateNode(SceneGraph* graph, const std::string& nodeName, Args&&... args)
     {
-        static_assert(T::GetRequiredChildrenCount() > 0);
+        static_assert(T::GetMinChildrenCount() > 0);
         SceneNode* n = new SceneNode();
         n->m_SceneGraph = graph;
         n->m_NodeName = nodeName;
         n->m_NodeType = T::GetNodeType();
-        n->m_Children.reserve(T::GetRequiredChildrenCount());
-        std::array<const AnalyticScalarField*, T::GetRequiredChildrenCount()> arrayFields; 
+        n->m_Children.reserve(T::GetMinChildrenCount());
+        std::array<const AnalyticScalarField*, T::GetMinChildrenCount()> arrayFields; 
 
-        for (size_t i = 0; i < T::GetRequiredChildrenCount(); i++)
+        for (size_t i = 0; i < T::GetMinChildrenCount(); i++)
         {
             n->m_Children.emplace_back(CreateLeaf<VoidImplicit>(graph, "Empty"));
             n->m_Children.back()->setParent(n);
             arrayFields[i] = n->m_Children.back()->getImplicit();
         }
 
-        auto tupleFields = array_to_tuple<const AnalyticScalarField*, T::GetRequiredChildrenCount()>(arrayFields);
+        auto tupleFields = array_to_tuple<const AnalyticScalarField*, T::GetMinChildrenCount()>(arrayFields);
         auto tupleArgs = std::tuple_cat(tupleFields, std::make_tuple(std::forward<Args>(args)...));
         
         n->m_Implicit = std::unique_ptr<T>(new T(std::make_from_tuple<T>(tupleArgs)));
         n->m_IsLeaf = false;
+        n->m_MinChildrenCount = T::GetMinChildrenCount();
+        n->m_MaxChildrenCount = T::GetMaxChildrenCount();
 
         return std::unique_ptr<SceneNode>(n);
     }
@@ -105,6 +111,10 @@ public:
 
     inline size_t getChildrenCount() const { return m_Children.size(); }
 
+    inline int getMinChildrenCount() const { return m_MinChildrenCount; }
+
+    inline int getMaxChildrenCount() const { return m_MaxChildrenCount; }
+
     inline bool isLeaf() const { return m_IsLeaf; }
 
     inline bool isNode() const { return !m_IsLeaf; }
@@ -124,6 +134,8 @@ public:
     SceneNode* setChildNode(size_t field, std::unique_ptr<SceneNode>&& node);
 
     SceneNode* setNode(std::unique_ptr<SceneNode>&& node, bool preserveChildren = true);
+
+    void removeChildNode(size_t field);
 
     inline void setSelected(bool selected) { m_Selected = selected; }
 
@@ -150,6 +162,7 @@ private:
     NodeType::Type m_NodeType = NodeType::Type::InvalidNode;
     std::unique_ptr<AnalyticScalarField> m_Implicit;
     Container m_Children;
+    int m_MinChildrenCount = 0, m_MaxChildrenCount = 0;
     bool m_IsLeaf = true;
     bool m_Selected = false;
 };

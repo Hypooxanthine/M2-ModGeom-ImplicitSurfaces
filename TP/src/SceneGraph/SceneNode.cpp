@@ -38,11 +38,17 @@ void SceneNode::onImgui()
                     auto fieldSrc = srcParent->getFieldContaining(srcNode);
 
                     bool dstIsAncestorOfSrc = dstNode->isAncestorOf(srcNode);
+                    bool leastThanMinChildren = srcParent->getChildrenCount() - 1 < srcParent->getMinChildrenCount();
 
                     setNode(std::move(srcNode->getParent()->m_Children.at(fieldSrc)), false);
 
                     if (!dstIsAncestorOfSrc)
-                        srcParent->setChildNode(fieldSrc, CreateLeaf<VoidImplicit>(m_SceneGraph, "Empty"));
+                    {
+                        if (leastThanMinChildren)
+                            srcParent->setChildNode(fieldSrc, CreateLeaf<VoidImplicit>(m_SceneGraph, "Empty"));
+                        else
+                            srcParent->removeChildNode(fieldSrc);
+                    }
 
                     m_SceneGraph->closeNodeEditor();
                 }
@@ -79,6 +85,19 @@ void SceneNode::onImgui()
 
 SceneNode* SceneNode::setChildNode(size_t field, std::unique_ptr<SceneNode>&& node)
 {
+    if (field >= m_Children.size())
+    {
+        VRM_LOG_WARN("Field {} >= children count {}", field, m_Children.size());
+        m_Children.reserve(field + 1);
+
+        for (int i = m_Children.size(); i < field + 1; i++)
+        {
+            m_Children.emplace_back(CreateLeaf<VoidImplicit>(m_SceneGraph, "Empty"));
+            m_Children.back()->setParent(this);
+            m_Implicit->addField(m_Children.back()->getImplicit());
+        }
+    }
+
     m_Implicit->setField(field, node->getImplicit());
     node->setParent(this);
     m_Children.at(field) = std::move(node);
@@ -107,6 +126,13 @@ SceneNode* SceneNode::setNode(std::unique_ptr<SceneNode>&& node, bool preserveCh
         child->setParent(this);
 
     return this;
+}
+
+void SceneNode::removeChildNode(size_t field)
+{
+    VRM_ASSERT_MSG(m_Children.size() > m_MinChildrenCount, "Couldn't remove child node because children count is already at its minimum.");
+    m_Implicit->removeField(field);
+    m_Children.erase(std::next(m_Children.begin(), field));
 }
 
 size_t SceneNode::getFieldContaining(const SceneNode* node) const

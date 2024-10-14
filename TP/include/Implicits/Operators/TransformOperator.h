@@ -2,7 +2,7 @@
 
 #include "Implicits/Operators/Operator.h"
 
-class TransformOperator : public UnaryOperator
+class TransformOperator : public Operator<1, 1>
 {
 public:
     TransformOperator(const AnalyticScalarField* field, const glm::vec3& translation = glm::vec3(0.f), const glm::vec3& scale = glm::vec3(1.f), const glm::vec3& rotation = glm::vec3(0.f));
