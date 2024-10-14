@@ -3,7 +3,7 @@
 ## Description
 
 University assignment.
-This project is an implementation of implicit surfaces. Visualization with marching cubes algorithm. Editable scene hierarchy in ImGui interface.*
+This project is an implementation of implicit surfaces. Visualization with marching cubes algorithm. Editable scene hierarchy in ImGui interface.
 
 ## Screenshots
 
@@ -63,3 +63,4 @@ sudo apt install ninja-build
 
 - [Vroom](https://github.com/Hypooxanthine/Vroom), my 3D library written in C++/OpenGL (I modified it a bit to fit the needs of this project)
 - [imgui](https://github.com/ocornut/imgui), for the GUI
+- [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo), for gizmos.
