@@ -130,6 +130,8 @@ public:
     // Setters
 
     inline void setNodeName(const std::string& nodeName) { m_NodeName = nodeName; }
+
+    SceneNode* addChildNode(std::unique_ptr<SceneNode>&& node);
     
     SceneNode* setChildNode(size_t field, std::unique_ptr<SceneNode>&& node);
 

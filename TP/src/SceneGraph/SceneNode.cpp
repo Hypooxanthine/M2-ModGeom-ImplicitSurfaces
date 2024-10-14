@@ -83,18 +83,25 @@ void SceneNode::onImgui()
     ImGui::PopID();
 }
 
+SceneNode* SceneNode::addChildNode(std::unique_ptr<SceneNode>&& node)
+{
+    VRM_ASSERT_MSG(m_Children.size() < m_MaxChildrenCount, "Couldn't add child node : max children count reached.");
+    m_Children.emplace_back(std::move(node));
+    m_Children.back()->setParent(this);
+    m_Implicit->addField(m_Children.back()->getImplicit());
+
+    return m_Children.back().get();
+}
+
 SceneNode* SceneNode::setChildNode(size_t field, std::unique_ptr<SceneNode>&& node)
 {
     if (field >= m_Children.size())
     {
-        VRM_LOG_WARN("Field {} >= children count {}", field, m_Children.size());
         m_Children.reserve(field + 1);
 
         for (int i = m_Children.size(); i < field + 1; i++)
         {
-            m_Children.emplace_back(CreateLeaf<VoidImplicit>(m_SceneGraph, "Empty"));
-            m_Children.back()->setParent(this);
-            m_Implicit->addField(m_Children.back()->getImplicit());
+            addChildNode(CreateLeaf<VoidImplicit>(m_SceneGraph, "Empty"));
         }
     }
 

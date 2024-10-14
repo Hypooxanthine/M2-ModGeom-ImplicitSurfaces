@@ -41,6 +41,29 @@ void NodeEditor::onImgui()
             ImGui::EndCombo();
         }
 
+        if (m_Node->getChildrenCount() < m_Node->getMaxChildrenCount())
+        {
+            ImGui::TextWrapped("Add child...");
+            ImGui::SameLine();
+            if (ImGui::BeginCombo("##Add child...", "", ImGuiComboFlags_NoPreview))
+            {
+                for (int i = 0; i < static_cast<int>(NodeType::Type::COUNT); i++)
+                {
+                    if (i == static_cast<int>(NodeType::Type::OPERATORS_COUNT))
+                        ImGui::Separator();
+
+                    if (ImGui::Selectable(NodeType::GetUINameOfNodeType(static_cast<NodeType::Type>(i)).data()))
+                    {
+                        auto node = NodeType::CreateNodeOfType(static_cast<NodeType::Type>(i), m_Node->getSceneGraph());
+
+                        m_Node->addChildNode(std::move(node));
+                    }
+                };
+
+                ImGui::EndCombo();
+            }
+        }
+
         ImGui::TextWrapped("Name");
         ImGui::SameLine();
         ImGui::InputText(
