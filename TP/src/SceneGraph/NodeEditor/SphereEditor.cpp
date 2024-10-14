@@ -5,16 +5,20 @@
 #include "Implicits/Primitives/Sphere.h"
 
 SphereEditor::SphereEditor(SceneNode* node, Sphere* imp)
-    : NodeEditor(node), m_Implicit(imp)
+    : PrimitiveEditor(node, imp), m_Implicit(imp)
 {}
 
-void SphereEditor::onImgui_Impl()
+void SphereEditor::onImgui_PrimitiveImpl()
 {
+    glm::vec3 center = m_Implicit->getCenter();
     ImGui::TextWrapped("Sphere center");
     ImGui::SameLine();
-    ImGui::DragFloat3("##Spherecenter", &m_Implicit->getCenterRef().x, .1f);
+    if (ImGui::DragFloat3("##Spherecenter", &center.x, .1f))
+        m_Implicit->setCenter(center);
 
+    float radius = m_Implicit->getRadius();
     ImGui::TextWrapped("Sphere radius");
     ImGui::SameLine();
-    ImGui::DragFloat("##Sphereradius", &m_Implicit->getRadiusRef(), .1f, 0.1f, 10.f);
+    if (ImGui::DragFloat("##Sphereradius", &radius, .1f, 0.1f, 10.f))
+        m_Implicit->setRadius(radius);
 }

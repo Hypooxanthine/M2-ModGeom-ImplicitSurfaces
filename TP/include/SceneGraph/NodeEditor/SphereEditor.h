@@ -1,17 +1,17 @@
 #pragma once
 
-#include "SceneGraph/NodeEditor/NodeEditor.h"
+#include "SceneGraph/NodeEditor/PrimitiveEditor.h"
 
 class Sphere;
 
-class SphereEditor : public NodeEditor
+class SphereEditor : public PrimitiveEditor
 {
 public:
     SphereEditor() = default;
     SphereEditor(SceneNode* node, Sphere* imp);
 
 private:
-    void onImgui_Impl() override;
+    void onImgui_PrimitiveImpl() override;
 
 private:
     Sphere* m_Implicit = nullptr;
