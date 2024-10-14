@@ -16,5 +16,5 @@ void SphereEditor::onImgui_Impl()
 
     ImGui::TextWrapped("Sphere radius");
     ImGui::SameLine();
-    ImGui::DragFloat("##Sphereradius", &m_Implicit->getRadiusRef(), .1f);
+    ImGui::DragFloat("##Sphereradius", &m_Implicit->getRadiusRef(), .1f, 0.1f, 10.f);
 }

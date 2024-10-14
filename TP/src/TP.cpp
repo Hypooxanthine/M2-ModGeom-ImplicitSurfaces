@@ -43,7 +43,6 @@ int main(int argc, char** argv)
 	gameLayer.createCustomEvent("MouseMoved")
 		.bindInput(vrm::Event::Type::MouseMoved);
 	gameLayer.createCustomEvent("Exit")
-		.bindInput(vrm::Event::Type::KeyPressed, vrm::KeyCode::Escape)
 		.bindInput(vrm::Event::Type::Exit)
 		.bindCallback([&app](const vrm::Event&) { app.exit(); });
 	
