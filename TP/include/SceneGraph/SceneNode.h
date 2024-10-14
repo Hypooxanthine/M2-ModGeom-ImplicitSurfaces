@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <array>
 
 #include "Implicits/implicits.h"
 #include "Implicits/Primitives/VoidImplicit.h"
