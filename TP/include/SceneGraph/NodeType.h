@@ -12,7 +12,7 @@ public:
     enum class Type
     {
         Union = 0, Intersection, Blend, Difference, Transform,
-        Empty, Sphere, Cube, Capsule,
+        Empty, Sphere, Cube, Capsule, Torus,
         COUNT, OPERATORS_COUNT = Empty - Union, PRIMITIVES_COUNT = COUNT - Empty,
         InvalidNode = -1
     };
