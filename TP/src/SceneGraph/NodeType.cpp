@@ -9,6 +9,7 @@
 #include "Implicits/Operators/TransformOperator.h"
 #include "Implicits/Primitives/VoidImplicit.h"
 #include "Implicits/Primitives/Sphere.h"
+#include "Implicits/Primitives/Cube.h"
 
 std::string_view NodeType::GetUINameOfNodeType(const Type& nodeType)
 {
@@ -28,6 +29,8 @@ std::string_view NodeType::GetUINameOfNodeType(const Type& nodeType)
         return "Empty";
     case Type::Sphere:
         return "Sphere";
+    case Type::Cube:
+        return "Cube";
     default:
         return "Undefined node type";
     }
@@ -50,6 +53,8 @@ std::unique_ptr<SceneNode> NodeType::CreateNodeOfType(const Type& nodeType, Scen
         return SceneNode::CreateNode<TransformOperator>(graph, nodeName);
     case Type::Sphere:
         return SceneNode::CreateLeaf<Sphere>(graph, nodeName);
+    case Type::Cube:
+        return SceneNode::CreateLeaf<Cube>(graph, nodeName);
     case Type::Empty:
     default:
         return SceneNode::CreateLeaf<VoidImplicit>(graph, nodeName);

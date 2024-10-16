@@ -6,7 +6,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 Primitive::Primitive()
-    : Primitive(glm::mat4(1.f))
+    : m_Transform(glm::mat4(1.f)), m_TransformInv(1.f), m_Translation(0.f), m_Scale(1.f), m_Rotation(0.f), m_TransformDirty(false)
 {}
 
 Primitive::Primitive(const glm::vec3& translation, const glm::vec3& scale, const glm::vec3& rotation)

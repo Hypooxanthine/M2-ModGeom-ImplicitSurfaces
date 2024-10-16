@@ -99,7 +99,7 @@ SceneNode* SceneNode::setChildNode(size_t field, std::unique_ptr<SceneNode>&& no
     {
         m_Children.reserve(field + 1);
 
-        for (int i = m_Children.size(); i < field + 1; i++)
+        for (size_t i = m_Children.size(); i < field + 1; i++)
         {
             addChildNode(CreateLeaf<VoidImplicit>(m_SceneGraph, "Empty"));
         }
