@@ -10,7 +10,7 @@ Sphere::Sphere(const glm::vec3& center, float radius)
 
 float Sphere::value_PrimitiveImpl(const glm::vec3& p) const
 {
-    return glm::length2(p - m_Center) - m_Radius * m_Radius;
+    return glm::length(p - m_Center) - m_Radius;
 }
 
 std::unique_ptr<NodeEditor> Sphere::instanciateEditor(SceneNode* node)

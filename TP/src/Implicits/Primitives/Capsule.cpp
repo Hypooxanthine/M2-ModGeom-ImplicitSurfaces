@@ -27,11 +27,11 @@ float Capsule::value_PrimitiveImpl(const glm::vec3& p) const
     const glm::vec3 projected = m_A + m_AB * glm::dot(p - m_A, m_AB);
 
     if (glm::dot(projected - m_A, m_AB) < 0.f)
-        return glm::length2(p - m_A) - m_Radius * m_Radius;
+        return glm::length(p - m_A) - m_Radius;
     else if (glm::dot(projected - m_B, -m_AB) < 0.f)
-        return glm::length2(p - m_B) - m_Radius * m_Radius;
+        return glm::length(p - m_B) - m_Radius;
     else
-        return glm::length2(p - projected) - m_Radius * m_Radius;
+        return glm::length(p - projected) - m_Radius;
 }
 
 std::unique_ptr<NodeEditor> Capsule::instanciateEditor(SceneNode* node)
