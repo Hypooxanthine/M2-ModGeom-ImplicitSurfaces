@@ -10,6 +10,7 @@
 #include "Implicits/Primitives/VoidImplicit.h"
 #include "Implicits/Primitives/Sphere.h"
 #include "Implicits/Primitives/Cube.h"
+#include "Implicits/Primitives/Capsule.h"
 
 std::string_view NodeType::GetUINameOfNodeType(const Type& nodeType)
 {
@@ -31,6 +32,8 @@ std::string_view NodeType::GetUINameOfNodeType(const Type& nodeType)
         return "Sphere";
     case Type::Cube:
         return "Cube";
+    case Type::Capsule:
+        return "Capsule";
     default:
         return "Undefined node type";
     }
@@ -55,6 +58,8 @@ std::unique_ptr<SceneNode> NodeType::CreateNodeOfType(const Type& nodeType, Scen
         return SceneNode::CreateLeaf<Sphere>(graph, nodeName);
     case Type::Cube:
         return SceneNode::CreateLeaf<Cube>(graph, nodeName);
+    case Type::Capsule:
+        return SceneNode::CreateLeaf<Capsule>(graph, nodeName);
     case Type::Empty:
     default:
         return SceneNode::CreateLeaf<VoidImplicit>(graph, nodeName);
