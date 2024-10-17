@@ -50,5 +50,6 @@ void SceneGraph::onImgui()
     {
         SceneNode* node = m_NodeEditor->getNode();
         m_NodeEditor = std::move(node->getImplicit()->instanciateEditor(node));
+        m_NodeEditor->getNode()->setSelected(true);
     }
 }
