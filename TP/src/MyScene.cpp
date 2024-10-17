@@ -164,7 +164,7 @@ void MyScene::onImGui()
     ImGui::Begin("Tweaks");
         ImGui::Checkbox("Real-time processing", &m_RealTimeProcessing);
         ImGui::TextWrapped("Discretization parameter");
-        ImGui::SliderInt("##Discretization parameter", &m_DiscretizationParameter, 2, 200);
+        ImGui::SliderInt("##Discretization parameter", &m_DiscretizationParameter, 2, 500);
         ImGui::TextWrapped("Box start");
         ImGui::SliderFloat3("##Box start", &m_BoxStart.x, -20.f, 20.f);
         ImGui::TextWrapped("Box end");

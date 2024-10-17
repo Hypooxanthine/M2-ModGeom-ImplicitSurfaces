@@ -13,7 +13,7 @@ public:
     {
         Union = 0, Intersection, Blend, Difference, Transform,
         Empty, Sphere, Cube, Capsule, Torus,
-        COUNT, OPERATORS_COUNT = Empty - Union, PRIMITIVES_COUNT = COUNT - Empty,
+        COUNT, OPERATORS_COUNT = Empty - Union, PRIMITIVES_COUNT = COUNT - Empty, OPERATORS_START = Union, PRIMITES_START = Empty,
         InvalidNode = -1
     };
 

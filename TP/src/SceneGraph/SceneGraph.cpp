@@ -2,20 +2,13 @@
 
 #include "imgui.h"
 
-#include "Implicits/Operators/BlendOperator.h"
-#include "Implicits/Operators/UnionOperator.h"
-#include "Implicits/Primitives/Sphere.h"
+#include "SceneGraph/NodeType.h"
 
 #include "SceneGraph/NodeEditor/BlendOperatorEditor.h"
 
 SceneGraph::SceneGraph()
-    : m_Root(SceneNode::CreateNode<BlendOperator>(this, "Blending", 1.f))
+    : m_Root(NodeType::CreateNodeOfType(NodeType::Type::Union, this))
 {
-    m_Root->setChildNode(0, SceneNode::CreateLeaf<Sphere>(this, "Sphere 1", glm::vec3(0.f), 1.5f));
-    m_Root->setChildNode(1, SceneNode::CreateNode<UnionOperator>(this, "Union"));
-        m_Root->getChild(1)->setChildNode(0, SceneNode::CreateLeaf<Sphere>(this, "Sphere 2", glm::vec3(1.f, 0.f, 0.f), 1.f));
-        m_Root->getChild(1)->setChildNode(1, SceneNode::CreateLeaf<Sphere>(this, "Sphere 3", glm::vec3(-1.f, 0.f, 0.f), 1.f));
-
     m_NodeEditor = std::make_unique<NodeEditor>();
 }
 

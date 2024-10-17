@@ -7,6 +7,8 @@
 
 #include "SceneGraph/SceneGraph.h"
 
+#include "Implicits/Operators/BlendOperator.h"
+
 float SceneNode::value(const glm::vec3& p) const
 {
     return m_Implicit->Value(p);
@@ -14,6 +16,11 @@ float SceneNode::value(const glm::vec3& p) const
 
 void SceneNode::onImgui()
 {
+    SceneNode* srcNode = nullptr;
+    SceneNode* dstNode = nullptr;
+    m_ChildPendingRemoval = m_Children.end();
+    bool shouldDeleteNode = false;
+
     ImGui::PushID(this);
 
     int flags = isNode() ?
@@ -29,31 +36,21 @@ void SceneNode::onImgui()
         {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NODE"))
             {
-                SceneNode* srcNode = *(SceneNode**)payload->Data;
-                SceneNode* dstNode = this;
-
-                if (!srcNode->isAncestorOf(dstNode) && srcNode != dstNode)
-                {
-                    auto* srcParent = srcNode->getParent();
-                    auto fieldSrc = srcParent->getFieldContaining(srcNode);
-
-                    bool dstIsAncestorOfSrc = dstNode->isAncestorOf(srcNode);
-                    bool leastThanMinChildren = srcParent->getChildrenCount() - 1 < srcParent->getMinChildrenCount();
-
-                    setNode(std::move(srcNode->getParent()->m_Children.at(fieldSrc)), false);
-
-                    if (!dstIsAncestorOfSrc)
-                    {
-                        if (leastThanMinChildren)
-                            srcParent->setChildNode(fieldSrc, CreateLeaf<VoidImplicit>(m_SceneGraph, "Empty"));
-                        else
-                            srcParent->removeChildNode(fieldSrc);
-                    }
-
-                    m_SceneGraph->closeNodeEditor();
-                }
+                srcNode = *(SceneNode**)payload->Data;
+                dstNode = this;
             }
             ImGui::EndDragDropTarget();
+        }
+        
+        if (ImGui::BeginPopupContextItem())
+        {
+            bool canDelete = m_Parent != nullptr && m_Parent->getChildrenCount() > m_Parent->getMinChildrenCount();
+            if (ImGui::MenuItem("Delete", nullptr, false, canDelete))
+            {
+                shouldDeleteNode = true;
+            }
+
+            ImGui::EndPopup();
         }
 
         if (ImGui::IsItemClicked())
@@ -81,6 +78,32 @@ void SceneNode::onImgui()
     }
 
     ImGui::PopID();
+    
+    removeChildPendingRemoval();
+
+    if (srcNode != nullptr && dstNode != nullptr && !srcNode->isAncestorOf(dstNode) && srcNode != dstNode)
+    {
+        auto* srcParent = srcNode->getParent();
+        auto fieldSrc = srcParent->getFieldContaining(srcNode);
+
+        bool dstIsAncestorOfSrc = dstNode->isAncestorOf(srcNode);
+        bool leastThanMinChildren = srcParent->getChildrenCount() - 1 < srcParent->getMinChildrenCount();
+
+        setNode(std::move(srcNode->getParent()->m_Children.at(fieldSrc)), false);
+
+        if (!dstIsAncestorOfSrc)
+        {
+            if (leastThanMinChildren)
+                srcParent->setChildNode(fieldSrc, CreateLeaf<VoidImplicit>(m_SceneGraph, "Empty"));
+            else
+                srcParent->removeChildNode(fieldSrc);
+        }
+
+        m_SceneGraph->closeNodeEditor();
+    }
+
+    if (shouldDeleteNode)
+        m_Parent->removeChildNode(this);
 }
 
 SceneNode* SceneNode::addChildNode(std::unique_ptr<SceneNode>&& node)
@@ -119,7 +142,7 @@ SceneNode* SceneNode::setNode(std::unique_ptr<SceneNode>&& node, bool preserveCh
     VRM_ASSERT_MSG(node->getSceneGraph() == m_SceneGraph, "Scene graph mismatch.");
 
     if (preserveChildren)
-        for (int i = 0; i < getChildrenCount() && i < node->getChildrenCount(); i++)
+        for (int i = 0; i < getChildrenCount() && i < node->getMaxChildrenCount(); i++)
             node->setChildNode(i, std::move(m_Children.at(i)));
     
     if (m_Parent != nullptr)
@@ -137,9 +160,23 @@ SceneNode* SceneNode::setNode(std::unique_ptr<SceneNode>&& node, bool preserveCh
 
 void SceneNode::removeChildNode(size_t field)
 {
+    m_ChildPendingRemoval = m_Children.begin() + field;
+}
+
+void SceneNode::removeChildNode(SceneNode* node)
+{
+    removeChildNode(getFieldContaining(node));
+}
+
+void SceneNode::removeChildPendingRemoval()
+{
+    if (m_ChildPendingRemoval == m_Children.end())
+        return;
     VRM_ASSERT_MSG(m_Children.size() > m_MinChildrenCount, "Couldn't remove child node because children count is already at its minimum.");
-    m_Implicit->removeField(field);
-    m_Children.erase(std::next(m_Children.begin(), field));
+    m_Implicit->removeField(std::distance(m_Children.begin(), m_ChildPendingRemoval));
+    m_Children.erase(m_ChildPendingRemoval);
+
+    m_SceneGraph->closeNodeEditor();
 }
 
 size_t SceneNode::getFieldContaining(const SceneNode* node) const

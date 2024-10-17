@@ -140,6 +140,8 @@ public:
 
     void removeChildNode(size_t field);
 
+    void removeChildNode(SceneNode* node);
+
     inline void setSelected(bool selected) { m_Selected = selected; }
 
     // Processing
@@ -158,6 +160,8 @@ private:
 
     inline void setParent(SceneNode* parent) { m_Parent = parent; }
 
+    void removeChildPendingRemoval();
+
 private:
     SceneGraph* m_SceneGraph = nullptr;
     SceneNode* m_Parent = nullptr;
@@ -168,4 +172,6 @@ private:
     int m_MinChildrenCount = 0, m_MaxChildrenCount = 0;
     bool m_IsLeaf = true;
     bool m_Selected = false;
+
+    Container::iterator m_ChildPendingRemoval = m_Children.end();
 };
