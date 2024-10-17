@@ -33,8 +33,13 @@ float AnalyticScalarField::Value(const glm::vec3& p) const
 \param g Returned geometry.
 \param epsilon Epsilon value for computing vertices on straddling edges.
 */
-void AnalyticScalarField::Polygonize(int n, vrm::MeshData& g, const Box& box, const float& epsilon) const
+void AnalyticScalarField::Polygonize(int n, vrm::MeshData& g, Box box, const float& epsilon) const
 {
+  for(glm::length_t i = 0; i < 3; i++)
+    if (box[0][i] < box[1][i])
+      std::swap(box[0][i], box[1][i]);
+
+
   std::vector<glm::vec3> vertex;
   std::vector<glm::vec3> normal;
 

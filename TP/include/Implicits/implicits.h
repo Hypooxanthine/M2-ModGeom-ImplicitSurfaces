@@ -35,7 +35,7 @@ public:
   // Dichotomy
   glm::vec3 Dichotomy(glm::vec3, glm::vec3, float, float, float, const float& = 1.0e-4) const;
 
-  virtual void Polygonize(int, vrm::MeshData&, const Box&, const float& = 1e-4) const;
+  virtual void Polygonize(int, vrm::MeshData&, Box, const float& = 1e-4) const;
 
   // Only for ASF that hold children.
   virtual void setField(size_t field, const AnalyticScalarField* asf) { throw std::runtime_error("Unauthorized operation"); }

@@ -30,7 +30,7 @@ public:
 
   // Access vertexes
   glm::vec3& operator[] (int);
-  glm::vec3 operator[] (int) const;
+  const glm::vec3& operator[] (int) const;
 
   // Comparison
   friend int operator==(const Box&, const Box&);
@@ -74,7 +74,7 @@ inline glm::vec3& Box::operator[] (int i)
 }
 
 //! Overloaded.
-inline glm::vec3 Box::operator[] (int i) const
+inline const glm::vec3& Box::operator[] (int i) const
 {
   if (i == 0) return a;
   else return b;
