@@ -8,16 +8,15 @@ Cube::Cube(const glm::vec3& firstCorner, const glm::vec3& secondCorner)
     : Primitive(), m_FirstCorner(firstCorner), m_SecondCorner(secondCorner)
 {}
 
+static float Max(float a)
+{
+    return a;
+}
+
 template <typename... Args>
 static float Max(float a, Args... args)
 {
     return std::max(a, Max(args...));
-}
-
-template<>
-static float Max(float a)
-{
-    return a;
 }
 
 float Cube::value_PrimitiveImpl(const glm::vec3& p) const
