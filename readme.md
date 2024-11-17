@@ -5,6 +5,10 @@
 University assignment.
 This project is an implementation of implicit surfaces. Visualization with marching cubes algorithm. Editable scene hierarchy in ImGui interface.
 
+## Demo video
+
+https://youtu.be/DXPArEzDYMM?si=MlzUqOqZEYR7_BHV
+
 ## Screenshots
 
 ![Screenshot](Screenshots/Editor_Leaf.png)
